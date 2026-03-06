@@ -1,11 +1,14 @@
 package com.example.jurnals.Models;
 
 public class Lesson {
+
     private String teacher_name;
     private String subject_name;
     private int lesson;
     private String started_at;
     private String finished_at;
+
+    private Integer statusWas;
 
     public String getTeacherName() {
         return teacher_name;
@@ -25,5 +28,13 @@ public class Lesson {
 
     public String getFinishedAt() {
         return finished_at;
+    }
+
+    public Integer getStatusWas() {
+        return statusWas;
+    }
+
+    public void setStatusWas(Integer statusWas) {
+        this.statusWas = statusWas;
     }
 }
