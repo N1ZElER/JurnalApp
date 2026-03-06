@@ -242,7 +242,6 @@ public class MainActivity extends AppCompatActivity {
                         Log.e("VISITS", t.getMessage());
                     }
                 });
-
     }
 
     private void requestNotificationPermission() {
@@ -265,18 +264,19 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-
+    // Update menu
     @Override
     protected void onResume() {
         super.onResume();
         updateCheckedItem();
     }
-
+    // Update menu
     private void updateCheckedItem() {
         MenuItem item = navigationView.getMenu().findItem(getCheckedItemId());
         if (item != null) item.setChecked(true);
     }
 
+    // Update menu
     private int getCheckedItemId() {
         String currentActivity = this.getClass().getSimpleName();
 
