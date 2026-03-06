@@ -1,15 +1,26 @@
+# Android / Studio
+.gradle/
+.idea/
 *.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+*.hprof
+
+# Билды и кэш
+/build/
+captures/
+output.json
+
+# Локальные конфиги
 local.properties
+
+# SharedPreferences (содержат токены)
+app/src/main/shared_prefs/
+
+# Секреты
+Models/Auth.java
+
+# Логи и временные файлы
+*.log
+*.tmp
+
+# MacOS
+.DS_Store
