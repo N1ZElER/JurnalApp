@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_shedule"
+        android:title="Пары"
+        android:checkable="true" />
+
+    <item
+        android:id="@+id/nav_ekzam"
+        android:title="Экзамены"
+        android:checkable="true" />
+
+    <item
+        android:id="@+id/nav_news"
+        android:title="Объявления"
+        android:checkable="true"
+        />
+
+    <item
+        android:id="@+id/nav_auth"
+        android:title="Авторизация"
+        android:checkable="true"
+        />
+</menu>
+

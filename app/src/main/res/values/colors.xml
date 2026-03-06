@@ -1,0 +1,10 @@
+<resources>
+
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+
+    <color name="lesson_default">#FFC107</color>
+    <color name="lesson_present">#4CAF50</color>
+    <color name="lesson_absent">#F44336</color>
+
+</resources>
