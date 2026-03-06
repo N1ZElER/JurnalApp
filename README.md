@@ -108,7 +108,7 @@ Navigation between them is done via **Navigation Drawer**.
 1. Clone the repository
 
 ```
-git clone https://github.com/yourusername/jurnals.git
+https://github.com/N1ZElER/JurnalApp.git
 ```
 
 2. Open the project in **Android Studio**
