@@ -138,6 +138,9 @@ It is a personal project created to interact with the public API.
 
 ---
 
+> ⚠️ **Important:** This app requires a valid TopAcademy account to fetch schedule, exams, and news.  
+> No real API tokens or credentials are included in this repository.
+
 # 👨‍💻 Author
 
 Developed by **N1ZELER**
