@@ -85,6 +85,11 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         return lessons.size();
     }
 
+    public void setData(List<Lesson> newLessons) {
+        this.lessons = newLessons;
+        notifyDataSetChanged();
+    }
+
     static class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView examDate;

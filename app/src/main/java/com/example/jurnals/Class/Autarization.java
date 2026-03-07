@@ -3,6 +3,9 @@ package com.example.jurnals.Class;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,6 +29,7 @@ public class Autarization extends AppCompatActivity {
     TextInputEditText passwordInput;
     MaterialButton loginButton;
     ApiService api;
+    TextView statusText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +39,7 @@ public class Autarization extends AppCompatActivity {
         usernameInput = findViewById(R.id.email);
         passwordInput = findViewById(R.id.password);
         loginButton = findViewById(R.id.loginBtn);
+        statusText = findViewById(R.id.statusText);
 
         // check token
         SharedPreferences prefs = getSharedPreferences("auth", MODE_PRIVATE);
@@ -96,10 +101,10 @@ public class Autarization extends AppCompatActivity {
 
                     Toast.makeText(
                             Autarization.this,
-                            "Ошибка входа",
+                            "Неверные данные",
                             Toast.LENGTH_SHORT
                     ).show();
-
+                    statusText.setVisibility(View.VISIBLE);
                 }
 
             }

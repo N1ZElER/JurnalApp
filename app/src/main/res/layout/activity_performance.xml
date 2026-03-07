@@ -44,7 +44,7 @@
                 android:id="@+id/dateText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Сегодня"
+                android:text="Успеваемость"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 android:textColor="@android:color/white"
@@ -54,17 +54,6 @@
                 app:layout_constraintEnd_toStartOf="@id/calendarBtn"
                 app:layout_constraintHorizontal_bias="0"/>
 
-            <ImageButton
-                android:id="@+id/calendarBtn"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginEnd="16dp"
-                android:src="@drawable/ic_calendar"
-                android:tint="@android:color/white"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                app:layout_constraintTop_toTopOf="@id/dateText"
-                app:layout_constraintBottom_toBottomOf="@id/dateText"
-                app:layout_constraintEnd_toEndOf="parent"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView"

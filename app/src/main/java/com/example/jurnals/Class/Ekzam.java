@@ -90,6 +90,13 @@ public class Ekzam extends AppCompatActivity {
             } else if (id == R.id.nav_news) {
                 startActivity(new Intent(this, News.class));
             }
+            else if (id == R.id.nav_auth){
+                Toast.makeText(this, "Вы уже авторизованы", Toast.LENGTH_SHORT).show();
+            }
+            else if (id == R.id.nav_performance) {
+                startActivity(new Intent(this, Performance.class));
+            }
+
             drawerLayout.closeDrawer(GravityCompat.START);
             return true;
         });
