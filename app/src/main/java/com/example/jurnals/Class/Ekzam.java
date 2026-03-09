@@ -94,7 +94,8 @@ public class Ekzam extends AppCompatActivity {
                 Toast.makeText(this, "Вы уже авторизованы", Toast.LENGTH_SHORT).show();
             }
             else if (id == R.id.nav_performance) {
-                startActivity(new Intent(this, Performance.class));
+//                startActivity(new Intent(this, Performance.class));
+                Toast.makeText(this,"Пока в разработке", Toast.LENGTH_SHORT).show();
             }
 
             drawerLayout.closeDrawer(GravityCompat.START);
@@ -102,6 +103,7 @@ public class Ekzam extends AppCompatActivity {
         });
 
         loadExam();
+
         swipeRefresh.setOnRefreshListener(this::loadExam);
     }
 
@@ -152,11 +154,7 @@ public class Ekzam extends AppCompatActivity {
 
                         dateText.setText("❌ Ошибка подключения");
 
-                        Toast.makeText(
-                                Ekzam.this,
-                                "Ошибка: " + t.getMessage(),
-                                Toast.LENGTH_LONG
-                        ).show();
+//                        Toast.makeText(Ekzam.this, "Ошибка сети, проверте подключение к интернету", Toast.LENGTH_SHORT).show();
                     }
                 });
     }

@@ -3,8 +3,6 @@ package com.example.jurnals.Class;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,11 +23,12 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Autarization extends AppCompatActivity {
-    TextInputEditText usernameInput;
-    TextInputEditText passwordInput;
-    MaterialButton loginButton;
-    ApiService api;
-    TextView statusText;
+
+    private TextInputEditText usernameInput, passwordInput;
+    private MaterialButton loginButton;
+    private TextView statusText;
+    private ApiService api;
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,15 +40,7 @@ public class Autarization extends AppCompatActivity {
         loginButton = findViewById(R.id.loginBtn);
         statusText = findViewById(R.id.statusText);
 
-        // check token
-        SharedPreferences prefs = getSharedPreferences("auth", MODE_PRIVATE);
-        String token = prefs.getString("token", null);
-
-        if(token != null){
-            startActivity(new Intent(this, MainActivity.class));
-            finish();
-            return;
-        }
+        prefs = getSharedPreferences("auth", MODE_PRIVATE);
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://msapi.top-academy.ru/")
@@ -58,68 +49,90 @@ public class Autarization extends AppCompatActivity {
 
         api = retrofit.create(ApiService.class);
 
+        checkTokenAndLogin();
+
         loginButton.setOnClickListener(v -> login());
     }
 
-    private void login() {
+    private void checkTokenAndLogin() {
+        String token = prefs.getString("token", null);
+        long tokenExpiry = prefs.getLong("tokenExpiry", 0);
+        long now = System.currentTimeMillis();
 
-        String username = usernameInput.getText().toString().trim();
-        String password = passwordInput.getText().toString().trim();
-
-        if(username.isEmpty() || password.isEmpty()){
-            Toast.makeText(this,"Введите логин и пароль",Toast.LENGTH_SHORT).show();
+        if (token != null && now < tokenExpiry) {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
             return;
         }
 
+        String savedUsername = prefs.getString("username", null);
+        String savedPassword = prefs.getString("password", null);
+
+        if (savedUsername != null && savedPassword != null) {
+            statusText.setText("Сессия устарела, выполняем авто-вход...");
+            statusText.setVisibility(TextView.VISIBLE);
+            autoLogin(savedUsername, savedPassword);
+        } else {
+            statusText.setText("Введите логин и пароль для входа.");
+            statusText.setVisibility(TextView.VISIBLE);
+        }
+    }
+
+    private void login() {
+        String username = usernameInput.getText().toString().trim();
+        String password = passwordInput.getText().toString().trim();
+
+        if (username.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Введите логин и пароль", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        doLogin(username, password, true);
+    }
+
+    private void autoLogin(String username, String password) {
+        doLogin(username, password, false);
+    }
+
+    private void doLogin(String username, String password, boolean saveCredentials) {
         Auth auth = new Auth(username, password);
 
         api.login(auth).enqueue(new Callback<LoginResponse>() {
-
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
 
                 if (response.isSuccessful() && response.body() != null) {
-
                     String token = response.body().getAccessToken();
+                    long expiryTime = System.currentTimeMillis() + (24 * 60 * 60 * 1000);
 
-                   // save token or auth
-                    SharedPreferences prefs = getSharedPreferences("auth", MODE_PRIVATE);
-                    prefs.edit().putString("token", token).apply();
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putString("token", token);
+                    editor.putLong("tokenExpiry", expiryTime);
 
-                    Toast.makeText(
-                            Autarization.this,
-                            "Добро пожаловать",
-                            Toast.LENGTH_SHORT
-                    ).show();
+                    if (saveCredentials) {
+                        editor.putString("username", username);
+                        editor.putString("password", password);
+                    }
 
+                    editor.apply();
 
-                    Intent intent = new Intent(Autarization.this, MainActivity.class);
-                    startActivity(intent);
+                    startActivity(new Intent(Autarization.this, MainActivity.class));
                     finish();
 
                 } else {
-
-                    Toast.makeText(
-                            Autarization.this,
-                            "Неверные данные",
-                            Toast.LENGTH_SHORT
-                    ).show();
-                    statusText.setVisibility(View.VISIBLE);
+                    if (!saveCredentials) {
+                        statusText.setText("Авто-вход не удался, введите логин и пароль.");
+                        statusText.setVisibility(TextView.VISIBLE);
+                    }
+                    Toast.makeText(Autarization.this, "Неверные данные", Toast.LENGTH_SHORT).show();
                 }
 
             }
 
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
-
-                Toast.makeText(
-                        Autarization.this,
-                        "Ошибка сети",
-                        Toast.LENGTH_SHORT
-                ).show();
-
+                Toast.makeText(Autarization.this, "Ошибка сети, проверте подключение к интернету", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 }

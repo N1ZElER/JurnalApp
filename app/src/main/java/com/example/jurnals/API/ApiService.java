@@ -1,8 +1,10 @@
 package com.example.jurnals.API;
 
+import com.example.jurnals.Class.News;
 import com.example.jurnals.Models.Auth;
 import com.example.jurnals.Models.Exam;
 import com.example.jurnals.Models.Lesson;
+import com.example.jurnals.Models.New;
 import com.example.jurnals.Models.Visit;
 import com.example.jurnals.Response.LoginResponse;
 import com.example.jurnals.Response.VisitResponse;
@@ -60,4 +62,20 @@ public interface ApiService {
     Call<List<Visit>> getVisits(
             @Header("Authorization") String token
     );
+
+
+    @Headers({
+            "origin: https://journal.top-academy.ru",
+            "referer: https://journal.top-academy.ru/",
+            "accept-language: ru_RU, ru"
+    })
+    @GET("api/v2/news/operations/latest-news")
+    Call<List<New>> getNews(
+            @Header("Authorization") String token
+    );
+
+
+
+
+
 }

@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ImageButton;
@@ -30,6 +31,7 @@ import com.example.jurnals.Class.Performance;
 import com.example.jurnals.Models.Lesson;
 import com.example.jurnals.Models.Visit;
 import com.example.jurnals.Notification.NotificationHelper;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.navigation.NavigationView;
 
@@ -59,8 +61,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        requestNotificationPermission();
-
         SharedPreferences prefs = getSharedPreferences("auth", MODE_PRIVATE);
         String token = prefs.getString("token", null);
 
@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_main);
+        requestNotificationPermission();
 
         menu = findViewById(R.id.menu);
         settings = findViewById(R.id.settings);
@@ -113,7 +114,8 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Вы уже авторизованы", Toast.LENGTH_SHORT).show();
             }
             else if (id == R.id.nav_performance) {
-                startActivity(new Intent(this, Performance.class));
+//                startActivity(new Intent(this, Performance.class));
+                Toast.makeText(this,"Пока в разработке", Toast.LENGTH_SHORT).show();
             }
 
             drawerLayout.closeDrawer(GravityCompat.START);
@@ -210,7 +212,8 @@ public class MainActivity extends AppCompatActivity {
             public void onFailure(Call<List<Lesson>> call, Throwable t) {
 
                 swipeRefresh.setRefreshing(false);
-                Toast.makeText(MainActivity.this, "Ошибка сети: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Ошибка сети, проверте подключение к интернету", Toast.LENGTH_SHORT).show();
+                dateText.setText("❌ Ошибка подключения");
             }
         });
     }
