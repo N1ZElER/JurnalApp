@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -30,6 +29,9 @@ public class Autarization extends AppCompatActivity {
     private ApiService api;
     private SharedPreferences prefs;
 
+    private long lastClickTime = 0;
+    private static final long DOUBLE_CLICK_DELAY = 300;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +53,17 @@ public class Autarization extends AppCompatActivity {
 
         checkTokenAndLogin();
 
-        loginButton.setOnClickListener(v -> login());
+        loginButton.setOnClickListener(v -> {
+            long now = System.currentTimeMillis();
+            if (now - lastClickTime < DOUBLE_CLICK_DELAY) {
+                statusText.setText("Используй данные от Jurnal");
+                statusText.setVisibility(TextView.VISIBLE);
+            } else {
+                statusText.setVisibility(TextView.GONE);
+                login();
+            }
+            lastClickTime = now;
+        });
     }
 
     private void checkTokenAndLogin() {
@@ -73,8 +85,8 @@ public class Autarization extends AppCompatActivity {
             statusText.setVisibility(TextView.VISIBLE);
             autoLogin(savedUsername, savedPassword);
         } else {
-            statusText.setText("Введите логин и пароль для входа.");
-            statusText.setVisibility(TextView.VISIBLE);
+            statusText.setText("Введите данные заново");
+            statusText.setVisibility(TextView.GONE);
         }
     }
 
@@ -83,10 +95,12 @@ public class Autarization extends AppCompatActivity {
         String password = passwordInput.getText().toString().trim();
 
         if (username.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Введите логин и пароль", Toast.LENGTH_SHORT).show();
+            statusText.setText("Введите логин и пароль");
+            statusText.setVisibility(TextView.VISIBLE);
             return;
         }
 
+        statusText.setVisibility(TextView.GONE);
         doLogin(username, password, true);
     }
 
@@ -120,18 +134,22 @@ public class Autarization extends AppCompatActivity {
                     finish();
 
                 } else {
+                    // Авто-вход не удался
                     if (!saveCredentials) {
-                        statusText.setText("Авто-вход не удался, введите логин и пароль.");
+                        statusText.setText("Авто-вход не удался, введите логин и пароль");
+                        statusText.setVisibility(TextView.VISIBLE);
+                    } else {
+                        statusText.setText("Неверный логин или пароль");
                         statusText.setVisibility(TextView.VISIBLE);
                     }
-                    Toast.makeText(Autarization.this, "Неверные данные", Toast.LENGTH_SHORT).show();
                 }
 
             }
 
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
-                Toast.makeText(Autarization.this, "Ошибка сети, проверте подключение к интернету", Toast.LENGTH_SHORT).show();
+                statusText.setText("Ошибка сети, проверьте подключение к интернету");
+                statusText.setVisibility(TextView.VISIBLE);
             }
         });
     }

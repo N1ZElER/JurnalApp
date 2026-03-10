@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 public class New {
 
     @SerializedName("id_bbs")
-    private int idBbs;
+    private int news_id;
 
     @SerializedName("theme")
     private String theme;
@@ -13,12 +13,11 @@ public class New {
     @SerializedName("time")
     private String time;
 
-    @SerializedName("viewed")
-    private boolean viewed;
+    @SerializedName("text_bbs")
+    private String content;
 
-
-    public int getIdBbs() {
-        return idBbs;
+    public int getNewsId() {
+        return news_id;
     }
 
     public String getTheme() {
@@ -29,7 +28,5 @@ public class New {
         return time;
     }
 
-    public boolean isViewed() {
-        return viewed;
-    }
+    public String getContent() { return content; }
 }

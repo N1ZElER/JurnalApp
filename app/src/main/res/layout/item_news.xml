@@ -36,6 +36,17 @@
             android:textColor="#444"
             android:layout_marginTop="6dp"/>
 
+        <TextView
+            android:id="@+id/detailTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:textColor="#333"
+            android:textSize="14sp"
+            android:layout_marginTop="8dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"/>
+
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

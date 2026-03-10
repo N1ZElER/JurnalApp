@@ -32,8 +32,11 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     @Override
     public void onBindViewHolder(@NonNull NewsViewHolder holder, int position) {
         New news = newsList.get(position);
+
         holder.spec.setText(news.getTheme());
         holder.date.setText(news.getTime());
+        holder.detailTextView.setVisibility(View.GONE);
+
     }
 
     @Override
@@ -42,13 +45,13 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     }
 
     static class NewsViewHolder extends RecyclerView.ViewHolder {
-        TextView date;
-        TextView spec;
+        TextView date, spec, detailTextView;
 
         public NewsViewHolder(@NonNull View itemView) {
             super(itemView);
             date = itemView.findViewById(R.id.examDate);
             spec = itemView.findViewById(R.id.examSpec);
+            detailTextView = itemView.findViewById(R.id.detailTextView);
         }
     }
 }

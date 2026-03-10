@@ -1,13 +1,11 @@
 package com.example.jurnals.API;
 
-import com.example.jurnals.Class.News;
 import com.example.jurnals.Models.Auth;
 import com.example.jurnals.Models.Exam;
 import com.example.jurnals.Models.Lesson;
 import com.example.jurnals.Models.New;
 import com.example.jurnals.Models.Visit;
 import com.example.jurnals.Response.LoginResponse;
-import com.example.jurnals.Response.VisitResponse;
 
 import java.util.List;
 
@@ -73,9 +71,4 @@ public interface ApiService {
     Call<List<New>> getNews(
             @Header("Authorization") String token
     );
-
-
-
-
-
 }

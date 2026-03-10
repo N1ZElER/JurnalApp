@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         requestNotificationPermission();
 
+
         menu = findViewById(R.id.menu);
         settings = findViewById(R.id.settings);
         dateText = findViewById(R.id.dateText);
@@ -81,6 +82,8 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = findViewById(R.id.drawerLayout);
         swipeRefresh = findViewById(R.id.swipeRefresh);
         calendarBtn = findViewById(R.id.calendarBtn);
+
+        dateText.setText("Сегодня");
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -178,12 +181,18 @@ public class MainActivity extends AppCompatActivity {
 
         if (token == null) return;
 
+
         api.getSchedule("Bearer " + token, date).enqueue(new Callback<List<Lesson>>() {
 
             @Override
             public void onResponse(Call<List<Lesson>> call, Response<List<Lesson>> response) {
 
                 swipeRefresh.setRefreshing(false);
+
+                if (response.code() == 401) {
+                    redirectToAuth();
+                    return;
+                }
 
                 if (response.isSuccessful() && response.body() != null) {
 
@@ -230,6 +239,11 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onResponse(Call<List<Visit>> call, Response<List<Visit>> response) {
+
+                        if (response.code() == 401) {
+                            redirectToAuth();
+                            return;
+                        }
 
                         if (response.isSuccessful() && response.body() != null) {
 
@@ -316,6 +330,19 @@ public class MainActivity extends AppCompatActivity {
                 );
             }
         }
+    }
+
+    private void redirectToAuth() {
+
+        SharedPreferences prefs = getSharedPreferences("auth", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.remove("token");
+        editor.remove("tokenExpiry");
+        editor.apply();
+
+        Intent intent = new Intent(MainActivity.this, Autarization.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 
     // Update menu
