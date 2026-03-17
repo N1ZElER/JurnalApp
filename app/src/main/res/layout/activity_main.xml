@@ -29,6 +29,18 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>
 
+            <!--            <ImageView-->
+            <!--            android:id="@+id/settings"-->
+            <!--            android:layout_width="48dp"-->
+            <!--            android:layout_height="48dp"-->
+            <!--            android:layout_margin="16dp"-->
+            <!--            android:background="?attr/selectableItemBackgroundBorderless"-->
+            <!--            android:tint="@android:color/white"-->
+            <!--            android:focusable="true"-->
+            <!--            android:clickable="true"-->
+            <!--            app:layout_constraintTop_toTopOf="parent"-->
+            <!--            app:layout_constraintEnd_toEndOf="parent"/>-->
+
             <ImageButton
                 android:id="@+id/menu"
                 android:layout_width="48dp"

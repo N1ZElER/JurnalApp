@@ -61,7 +61,6 @@ public interface ApiService {
             @Header("Authorization") String token
     );
 
-
     @Headers({
             "origin: https://journal.top-academy.ru",
             "referer: https://journal.top-academy.ru/",
@@ -70,5 +69,17 @@ public interface ApiService {
     @GET("api/v2/news/operations/latest-news")
     Call<List<New>> getNews(
             @Header("Authorization") String token
+    );
+
+    @Headers({
+            "origin: https://journal.top-academy.ru",
+            "referer: https://journal.top-academy.ru/",
+            "accept-language: ru_RU, ru",
+            "user-agent: Mozilla/5.0"
+    })
+    @GET("api/v2/news/operations/detail-news")
+    Call<New> getNewsDetail(
+            @Header("Authorization") String token,
+            @Query("news_id") int newsId
     );
 }

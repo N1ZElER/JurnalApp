@@ -4,8 +4,11 @@ import com.google.gson.annotations.SerializedName;
 
 public class New {
 
+    private boolean expanded = false;
+    private String fullText;
+
     @SerializedName("id_bbs")
-    private int news_id;
+    private int id_bbs;
 
     @SerializedName("theme")
     private String theme;
@@ -14,10 +17,10 @@ public class New {
     private String time;
 
     @SerializedName("text_bbs")
-    private String content;
+    private String text_bbs;
 
-    public int getNewsId() {
-        return news_id;
+    public int getId_bbs() {
+        return id_bbs;
     }
 
     public String getTheme() {
@@ -28,5 +31,23 @@ public class New {
         return time;
     }
 
-    public String getContent() { return content; }
+    public String getText_bbs() {
+        return text_bbs;
+    }
+
+    public boolean isExpanded() {
+        return expanded;
+    }
+
+    public void setExpanded(boolean expanded) {
+        this.expanded = expanded;
+    }
+
+    public String getFullText() {
+        return fullText;
+    }
+
+    public void setFullText(String fullText) {
+        this.fullText = fullText;
+    }
 }

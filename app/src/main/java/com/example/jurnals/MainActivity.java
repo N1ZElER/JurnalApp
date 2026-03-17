@@ -6,10 +6,9 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,16 +21,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.bumptech.glide.Glide;
 import com.example.jurnals.API.ApiService;
 import com.example.jurnals.Adapter.ScheduleAdapter;
 import com.example.jurnals.Class.Autarization;
 import com.example.jurnals.Class.Ekzam;
 import com.example.jurnals.Class.News;
-import com.example.jurnals.Class.Performance;
 import com.example.jurnals.Models.Lesson;
 import com.example.jurnals.Models.Visit;
 import com.example.jurnals.Notification.NotificationHelper;
-import com.google.android.material.button.MaterialButton;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.navigation.NavigationView;
 
@@ -46,7 +44,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
-    ImageButton menu, settings, calendarBtn;
+    ImageButton menu, calendarBtn, settings;
+//    ImageView settings;
     TextView dateText;
     RecyclerView recyclerView;
     NavigationView navigationView;
@@ -73,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         requestNotificationPermission();
 
-
         menu = findViewById(R.id.menu);
         settings = findViewById(R.id.settings);
         dateText = findViewById(R.id.dateText);
@@ -84,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
         calendarBtn = findViewById(R.id.calendarBtn);
 
         dateText.setText("Сегодня");
-
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -95,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
         api = retrofit.create(ApiService.class);
 
         selectedDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-
         loadSchedule(selectedDate);
 
         menu.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
@@ -106,18 +102,13 @@ public class MainActivity extends AppCompatActivity {
 
             if (id == R.id.nav_shedule) {
                 drawerLayout.closeDrawer(GravityCompat.START);
-            }
-            else if (id == R.id.nav_ekzam) {
+            } else if (id == R.id.nav_ekzam) {
                 startActivity(new Intent(this, Ekzam.class));
-            }
-            else if (id == R.id.nav_news) {
+            } else if (id == R.id.nav_news) {
                 startActivity(new Intent(this, News.class));
-            }
-            else if (id == R.id.nav_auth){
+            } else if (id == R.id.nav_auth){
                 Toast.makeText(this, "Вы уже авторизованы", Toast.LENGTH_SHORT).show();
-            }
-            else if (id == R.id.nav_performance) {
-//                startActivity(new Intent(this, Performance.class));
+            } else if (id == R.id.nav_performance) {
                 Toast.makeText(this,"Пока в разработке", Toast.LENGTH_SHORT).show();
             }
 
@@ -125,6 +116,15 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
 
+        // Animated Assets
+//        Glide.with(this)
+//                .asGif()
+//                .load(R.drawable.settings)
+//                .into(settings);
+//
+//        settings.setOnClickListener(v -> {
+//            Toast.makeText(this,"WORK",Toast.LENGTH_SHORT).show();
+//        });
 
         swipeRefresh.setOnRefreshListener(() -> loadSchedule(selectedDate));
 
@@ -161,7 +161,6 @@ public class MainActivity extends AppCompatActivity {
                 selectedDate = apiFormat.format(selected.getTime());
 
                 loadSchedule(selectedDate);
-
             });
 
             datePicker.show(getSupportFragmentManager(), "DATE_PICKER");
@@ -169,7 +168,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean isSameDay(Calendar c1, Calendar c2) {
-
         return c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR)
                 && c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR);
     }
@@ -181,12 +179,10 @@ public class MainActivity extends AppCompatActivity {
 
         if (token == null) return;
 
-
         api.getSchedule("Bearer " + token, date).enqueue(new Callback<List<Lesson>>() {
 
             @Override
             public void onResponse(Call<List<Lesson>> call, Response<List<Lesson>> response) {
-
                 swipeRefresh.setRefreshing(false);
 
                 if (response.code() == 401) {
@@ -219,7 +215,6 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<Lesson>> call, Throwable t) {
-
                 swipeRefresh.setRefreshing(false);
                 Toast.makeText(MainActivity.this, "Ошибка сети, проверте подключение к интернету", Toast.LENGTH_SHORT).show();
                 dateText.setText("❌ Ошибка подключения");
@@ -232,108 +227,105 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences authPrefs = getSharedPreferences("auth", MODE_PRIVATE);
         String token = authPrefs.getString("token", null);
 
+        if (token == null) {
+            redirectToAuth();
+            return;
+        }
+
         SharedPreferences visitPrefs = getSharedPreferences("visits", MODE_PRIVATE);
 
-        api.getVisits("Bearer " + token)
-                .enqueue(new Callback<List<Visit>>() {
+        api.getVisits("Bearer " + token).enqueue(new Callback<List<Visit>>() {
 
-                    @Override
-                    public void onResponse(Call<List<Visit>> call, Response<List<Visit>> response) {
+            @Override
+            public void onResponse(Call<List<Visit>> call, Response<List<Visit>> response) {
 
-                        if (response.code() == 401) {
-                            redirectToAuth();
-                            return;
-                        }
+                if (response.code() == 401) {
+                    redirectToAuth();
+                    return;
+                }
 
-                        if (response.isSuccessful() && response.body() != null) {
+                if (response.isSuccessful() && response.body() != null) {
 
-                            List<Visit> visits = response.body();
+                    List<Visit> visits = response.body();
 
-                            for (Lesson lesson : lessons) {
+                    if (lessons == null) return;
 
-                                lesson.setStatusWas(null);
+                    for (Lesson lesson : lessons) {
+                        lesson.setStatusWas(null);
+                        lesson.setClassWorkMark(null);
+                        lesson.setHomeWorkMark(null);
+                        lesson.setLabWorkMark(null);
 
-                                for (Visit visit : visits) {
+                        for (Visit visit : visits) {
 
-                                    String visitDate = visit.getDateVisit().substring(0,10);
+                            String visitDate = visit.getDateVisit();
+                            if (visitDate == null || visitDate.length() < 10) continue;
+                            visitDate = visitDate.substring(0, 10);
 
-                                    if (
-                                            visitDate.equals(selectedDate) &&
-                                                    lesson.getLesson() == visit.getLessonNumber()
-                                    ) {
+                            if (visitDate.equals(selectedDate) && lesson.getLesson() == visit.getLessonNumber()) {
 
-                                        lesson.setStatusWas(visit.getStatusWas());
+                                lesson.setStatusWas(visit.getStatusWas());
+                                lesson.setClassWorkMark(visit.getClassWorkMark());
+                                lesson.setHomeWorkMark(visit.getHomeWorkMark());
+                                lesson.setLabWorkMark(visit.getLabWorkMark());
+                                String key = selectedDate + "_lesson_" + lesson.getLesson();
+                                int savedStatus = visitPrefs.getInt(key, -1);
 
-                                        String key = selectedDate + "_lesson_" + lesson.getLesson();
-                                        int savedStatus = visitPrefs.getInt(key,-1);
+                                if (savedStatus != visit.getStatusWas()) {
 
-                                        if (savedStatus != visit.getStatusWas()) {
+                                    String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
 
-                                            String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-
-                                            if (selectedDate.equals(today)) {
-
-                                                if (visit.getStatusWas() == 1) {
-
-                                                    NotificationHelper.show(
-                                                            MainActivity.this,
-                                                            "Посещение",
-                                                            "Ты отмечен на " + lesson.getLesson() + " паре"
-                                                    );
-
-                                                } else {
-
-                                                    NotificationHelper.show(
-                                                            MainActivity.this,
-                                                            "Посещение",
-                                                            "У тебя пропуск на " + lesson.getLesson() + " паре"
-                                                    );
-
-                                                }
-                                            }
-
-                                            visitPrefs.edit()
-                                                    .putInt(key, visit.getStatusWas())
-                                                    .apply();
+                                    if (selectedDate.equals(today)) {
+                                        if (visit.getStatusWas() == 1) {
+                                            NotificationHelper.show(
+                                                    MainActivity.this,
+                                                    "Посещение",
+                                                    "Ты отмечен на " + lesson.getLesson() + " паре"
+                                            );
+                                        } else {
+                                            NotificationHelper.show(
+                                                    MainActivity.this,
+                                                    "Посещение",
+                                                    "У тебя пропуск на " + lesson.getLesson() + " паре"
+                                            );
                                         }
-
-                                        break;
                                     }
-                                }
-                            }
 
-                            adapter.notifyDataSetChanged();
+                                    visitPrefs.edit()
+                                            .putInt(key, visit.getStatusWas())
+                                            .apply();
+                                }
+
+                                break;
+                            }
                         }
                     }
 
-                    @Override
-                    public void onFailure(Call<List<Visit>> call, Throwable t) {
-
-                        Log.e("VISITS", t.getMessage());
+                    if (adapter != null) {
+                        adapter.notifyDataSetChanged();
                     }
-                });
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Visit>> call, Throwable t) {}
+        });
     }
 
     private void requestNotificationPermission() {
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
 
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.POST_NOTIFICATIONS
-            ) != PackageManager.PERMISSION_GRANTED) {
-
-                ActivityCompat.requestPermissions(
-                        this,
+                ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.POST_NOTIFICATIONS},
-                        1001
-                );
+                        1001);
             }
         }
     }
 
     private void redirectToAuth() {
-
         SharedPreferences prefs = getSharedPreferences("auth", MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.remove("token");
@@ -345,6 +337,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+
     // Update menu
     @Override
     protected void onResume() {
@@ -354,28 +347,20 @@ public class MainActivity extends AppCompatActivity {
 
     // Update menu
     private void updateCheckedItem() {
-
         MenuItem item = navigationView.getMenu().findItem(getCheckedItemId());
-
         if (item != null) item.setChecked(true);
     }
 
     // Update menu
     private int getCheckedItemId() {
-
         String currentActivity = this.getClass().getSimpleName();
-
         switch (currentActivity) {
-
             case "MainActivity":
                 return R.id.nav_shedule;
-
             case "ExamActivity":
                 return R.id.nav_ekzam;
-
             case "NewsActivity":
                 return R.id.nav_news;
-
             default:
                 return R.id.nav_shedule;
         }

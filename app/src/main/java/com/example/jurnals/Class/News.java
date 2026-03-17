@@ -10,12 +10,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
 import androidx.core.view.GravityCompat;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -50,8 +46,6 @@ public class News extends AppCompatActivity {
     Context context;
     private List<New> newsList;
 
-
-
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,12 +62,6 @@ public class News extends AppCompatActivity {
         context = this;
 
         newsList = new ArrayList<>();
-        newsAdapter = new NewsAdapter(newsList);
-        recyclerView.setAdapter(newsAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-
-
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://msapi.top-academy.ru/")
@@ -82,7 +70,12 @@ public class News extends AppCompatActivity {
 
         api = retrofit.create(ApiService.class);
 
+        SharedPreferences prefs = getSharedPreferences("auth", MODE_PRIVATE);
+        String token = prefs.getString("token", null);
 
+        newsAdapter = new NewsAdapter(newsList, api, token);
+        recyclerView.setAdapter(newsAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         menu.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
 
@@ -92,33 +85,25 @@ public class News extends AppCompatActivity {
 
             if (id == R.id.nav_shedule) {
                 startActivity(new Intent(this, MainActivity.class));
-            }
-            else if (id == R.id.nav_ekzam) {
+            } else if (id == R.id.nav_ekzam) {
                 startActivity(new Intent(this, Ekzam.class));
-            }
-            else if (id == R.id.nav_news) {
+            } else if (id == R.id.nav_news) {
                 drawerLayout.closeDrawer(GravityCompat.START);
-            }
-            else if (id == R.id.nav_auth){
+            } else if (id == R.id.nav_auth) {
                 Toast.makeText(this, "Вы уже авторизованы", Toast.LENGTH_SHORT).show();
-            }
-            else if (id == R.id.nav_performance) {
-//                startActivity(new Intent(this, Performance.class));
-                Toast.makeText(this,"Пока в разработке", Toast.LENGTH_SHORT).show();
+            } else if (id == R.id.nav_performance) {
+                Toast.makeText(this, "Пока в разработке", Toast.LENGTH_SHORT).show();
             }
 
             drawerLayout.closeDrawer(GravityCompat.START);
             return true;
         });
 
-
         dateText.setText("Объявления");
 
         loadNews();
         swipeRefresh.setOnRefreshListener(this::loadNews);
-
     }
-
 
     private void loadNews() {
         swipeRefresh.setRefreshing(true);
@@ -156,7 +141,6 @@ public class News extends AppCompatActivity {
             public void onFailure(Call<List<New>> call, Throwable t) {
                 swipeRefresh.setRefreshing(false);
                 dateText.setText("❌ Ошибка подключения");
-//                Toast.makeText(context, "Ошибка: " + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -170,28 +154,21 @@ public class News extends AppCompatActivity {
 
     // Update menu
     private void updateCheckedItem() {
-
         MenuItem item = navigationView.getMenu().findItem(getCheckedItemId());
-
         if (item != null) item.setChecked(true);
     }
 
     // Update menu
     private int getCheckedItemId() {
-
         String currentActivity = this.getClass().getSimpleName();
 
         switch (currentActivity) {
-
             case "MainActivity":
                 return R.id.nav_shedule;
-
             case "ExamActivity":
                 return R.id.nav_ekzam;
-
             case "NewsActivity":
                 return R.id.nav_news;
-
             default:
                 return R.id.nav_news;
         }

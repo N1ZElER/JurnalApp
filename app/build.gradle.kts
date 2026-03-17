@@ -43,6 +43,7 @@ dependencies {
     implementation("com.google.android.material:material:1.11.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
     implementation("com.google.android.material:material:1.11.0")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
 
     implementation(libs.appcompat)
     implementation(libs.material)

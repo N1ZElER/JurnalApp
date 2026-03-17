@@ -1,5 +1,7 @@
 package com.example.jurnals.Adapter;
 
+import android.graphics.Color;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +37,11 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+
         Lesson lesson = lessons.get(position);
+        Integer class_mark = lesson.getClassWorkMark();
+        Integer home_mark = lesson.getHomeWorkMark();
+        Integer lab_mark = lesson.getLabWorkMark();
 
         holder.examDate.setText(lesson.getSubjectName());
 
@@ -44,6 +50,37 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                         lesson.getStartedAt() + " - " + lesson.getFinishedAt() + "\n" +
                         lesson.getLesson() + " пара"
         );
+
+
+
+       // class mark
+        if(class_mark != null && class_mark > 0){
+            holder.examClassGrade.setVisibility(View.VISIBLE);
+            holder.examClassGrade.setText(String.valueOf(class_mark));
+            holder.examClassGrade.setTextColor(Color.DKGRAY);
+        }else{
+            holder.examClassGrade.setVisibility(View.GONE);
+        }
+
+
+        //home mark
+        if(home_mark != null && home_mark > 0){
+            holder.examHomeGrade.setVisibility(View.VISIBLE);
+            holder.examHomeGrade.setText(String.valueOf(home_mark));
+            holder.examHomeGrade.setTextColor(Color.RED);
+        }else{
+            holder.examHomeGrade.setVisibility(View.GONE);
+        }
+
+        // lab mark
+        if(lab_mark != null && lab_mark > 0){
+            holder.examLabGrade.setVisibility(View.VISIBLE);
+            holder.examLabGrade.setText(String.valueOf(lab_mark));
+            holder.examLabGrade.setTextColor(Color.YELLOW);
+        }else{
+            holder.examLabGrade.setVisibility(View.GONE);
+        }
+
 
         int color;
 
@@ -64,12 +101,15 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 String startRaw = lesson.getStartedAt().substring(0,5);
                 String endRaw = lesson.getFinishedAt().substring(0,5);
 
-                LocalTime start = LocalTime.parse(startRaw);
-                LocalTime end = LocalTime.parse(endRaw);
-                LocalTime now = LocalTime.now();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-                if(now.isAfter(start) && now.isBefore(end)){
-                    color = holder.itemView.getResources().getColor(R.color.lesson_now);
+                    LocalTime start = LocalTime.parse(startRaw);
+                    LocalTime end = LocalTime.parse(endRaw);
+                    LocalTime now = LocalTime.now();
+
+                    if(now.isAfter(start) && now.isBefore(end)){
+                        color = holder.itemView.getResources().getColor(R.color.lesson_now);
+                    }
                 }
 
             } catch (Exception ignored){}
@@ -77,7 +117,6 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         }
 
         holder.card.setStrokeColor(color);
-
     }
 
     @Override
@@ -92,7 +131,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView examDate;
+        TextView examDate, examClassGrade, examHomeGrade, examLabGrade;
         TextView examSpec;
         MaterialCardView card;
 
@@ -101,7 +140,10 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
 
             examDate = view.findViewById(R.id.examDate);
             examSpec = view.findViewById(R.id.examSpec);
+            examClassGrade = view.findViewById(R.id.examClassGrade);
             card = view.findViewById(R.id.lessonCard);
+            examHomeGrade = view.findViewById(R.id.examHomeGrade);
+            examLabGrade = view.findViewById(R.id.examLabGrade);
         }
     }
 }

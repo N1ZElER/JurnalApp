@@ -21,25 +21,71 @@
             android:id="@+id/examDate"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="⏰ 10:00 - 11:30"
+            android:text="null"
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="#212121"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/examClassGrade"
             app:layout_constraintTop_toTopOf="parent"/>
 
         <TextView
             android:id="@+id/examSpec"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="📘 Android\n👨‍🏫 Иванов"
+            android:text="null"
             android:textSize="14sp"
             android:textColor="#555"
             android:layout_marginTop="6dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/examClassGrade"
             app:layout_constraintTop_toBottomOf="@id/examDate"/>
+
+        <TextView
+            android:id="@+id/examClassGrade"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:text="null"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/examLabGrade"
+            app:layout_constraintVertical_chainStyle="packed"/>
+
+        <TextView
+            android:id="@+id/examLabGrade"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:text="null"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/examClassGrade"
+            app:layout_constraintBottom_toTopOf="@id/examHomeGrade"/>
+
+        <TextView
+            android:id="@+id/examHomeGrade"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:visibility="gone"
+            android:text="null"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/examLabGrade"/>
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
