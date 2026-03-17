@@ -45,6 +45,7 @@
             android:layout_marginTop="6dp"
             android:text="null"
             android:textColor="#6B7280"
+            android:linksClickable="true"
             android:textSize="13sp"
             app:layout_constraintTop_toBottomOf="@id/examDate"
             app:layout_constraintStart_toEndOf="@id/accentLine"/>
@@ -58,6 +59,7 @@
             android:textColor="#374151"
             android:textSize="14sp"
             android:visibility="gone"
+            android:linksClickable="true"
             app:layout_constraintTop_toBottomOf="@id/examSpec"
             app:layout_constraintStart_toEndOf="@id/accentLine"
             app:layout_constraintEnd_toEndOf="parent"/>

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,9 +53,18 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         holder.spec.setText(news.getTheme());
         holder.date.setText(news.getTime());
 
+        holder.detailTextView.setMovementMethod(LinkMovementMethod.getInstance());
+        holder.detailTextView.setLinksClickable(true);
+
         if (news.isExpanded()) {
             holder.detailTextView.setVisibility(View.VISIBLE);
-            holder.detailTextView.setText(news.getFullText() == null ? "" : news.getFullText());
+
+            holder.detailTextView.setText(
+                    Html.fromHtml(
+                            news.getFullText() == null ? "" : news.getFullText(),
+                            Html.FROM_HTML_MODE_LEGACY
+                    )
+            );
 
             if (news.getImageBitmap() != null) {
                 holder.detailImageView.setVisibility(View.VISIBLE);
@@ -93,14 +103,14 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
                         if (response.isSuccessful() && response.body() != null) {
                             String html = response.body().getText_bbs();
 
-                            String textOnly = Html.fromHtml(
-                                    removeImgTags(html),
-                                    Html.FROM_HTML_MODE_LEGACY
-                            ).toString().trim();
-
+                            String htmlWithoutImg = removeImgTags(html);
                             Bitmap bitmap = extractBase64Image(html);
 
-                            news.setFullText(textOnly.isEmpty() ? " " : textOnly);
+                            news.setFullText(
+                                    htmlWithoutImg == null || htmlWithoutImg.trim().isEmpty()
+                                            ? " "
+                                            : htmlWithoutImg
+                            );
                             news.setImageBitmap(bitmap);
                             news.setExpanded(true);
 
@@ -127,6 +137,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
                 "src\\s*=\\s*\"data:image/[^;]+;base64,([^\"]+)\"",
                 Pattern.CASE_INSENSITIVE
         );
+
 
         Matcher matcher = pattern.matcher(html);
 
