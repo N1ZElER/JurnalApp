@@ -1,9 +1,16 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+
     <style name="Base.Theme.Jurnals" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:statusBarColor">#09111B</item>
+        <item name="android:navigationBarColor">#09111B</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:windowBackground">#09111B</item>
+
+        <item name="colorPrimary">#09111B</item>
+        <item name="colorSecondary">#09111B</item>
     </style>
 
     <style name="Theme.Jurnals" parent="Base.Theme.Jurnals" />
+
 </resources>

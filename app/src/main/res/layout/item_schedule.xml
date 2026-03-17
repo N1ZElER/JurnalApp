@@ -5,12 +5,12 @@
     android:id="@+id/lessonCard"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="4dp"
-    android:layout_marginBottom="4dp"
-    app:cardCornerRadius="14dp"
-    app:cardElevation="6dp"
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="18dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="@android:color/white"
     app:strokeWidth="2dp"
-    app:strokeColor="@color/lesson_default">
+    app:strokeColor="#D1D5DB">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -22,70 +22,70 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="null"
+            android:textColor="#111827"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:textColor="#212121"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/examClassGrade"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintEnd_toStartOf="@id/examClassGrade" />
 
         <TextView
             android:id="@+id/examSpec"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="null"
-            android:textSize="14sp"
-            android:textColor="#555"
             android:layout_marginTop="6dp"
+            android:text="null"
+            android:textColor="#6B7280"
+            android:textSize="14sp"
+            app:layout_constraintTop_toBottomOf="@id/examDate"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/examClassGrade"
-            app:layout_constraintTop_toBottomOf="@id/examDate"/>
+            app:layout_constraintBottom_toBottomOf="parent" />
 
         <TextView
             android:id="@+id/examClassGrade"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:text="null"
             android:gravity="center"
-            android:textSize="20sp"
+            android:text="5"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="#FFFFFF"
             android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@id/examLabGrade"
-            app:layout_constraintVertical_chainStyle="packed"/>
+            app:layout_constraintVertical_chainStyle="packed" />
 
         <TextView
             android:id="@+id/examLabGrade"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:text="null"
+            android:layout_marginTop="6dp"
             android:gravity="center"
-            android:textSize="20sp"
+            android:text="4"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
             android:textStyle="bold"
             android:visibility="gone"
-            android:textColor="#FFFFFF"
-            android:layout_marginTop="4dp"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/examClassGrade"
-            app:layout_constraintBottom_toTopOf="@id/examHomeGrade"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/examHomeGrade" />
 
         <TextView
             android:id="@+id/examHomeGrade"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:visibility="gone"
-            android:text="null"
+            android:layout_marginTop="6dp"
             android:gravity="center"
-            android:textSize="20sp"
+            android:text="3"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="#FFFFFF"
-            android:layout_marginTop="4dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/examLabGrade"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/examLabGrade"/>
-
-
+            app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

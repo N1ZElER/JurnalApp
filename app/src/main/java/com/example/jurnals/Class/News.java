@@ -120,13 +120,13 @@ public class News extends AppCompatActivity {
                     List<New> newNews = response.body();
 
                     if (newNews.isEmpty()) {
-                        dateText.setText("🎉 Объявлений нет");
+                        dateText.setText("Объявлений нет");
                         newsList.clear();
                         newsAdapter.notifyDataSetChanged();
                         return;
                     }
 
-                    dateText.setText("📰 Последние объявления");
+                    dateText.setText("Последние объявления");
 
                     newsList.clear();
                     newsList.addAll(newNews);

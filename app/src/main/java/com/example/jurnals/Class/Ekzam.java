@@ -134,7 +134,7 @@ public class Ekzam extends AppCompatActivity {
                                 return;
                             }
 
-                            dateText.setText("📚 Ближайшие экзамены");
+                            dateText.setText("Ближайшие экзамены");
 
                             exams.clear();
                             exams.addAll(newExams);

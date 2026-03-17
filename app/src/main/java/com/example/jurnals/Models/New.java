@@ -1,11 +1,14 @@
 package com.example.jurnals.Models;
 
+import android.graphics.Bitmap;
+
 import com.google.gson.annotations.SerializedName;
 
 public class New {
 
     private boolean expanded = false;
     private String fullText;
+    private Bitmap imageBitmap;
 
     @SerializedName("id_bbs")
     private int id_bbs;
@@ -49,5 +52,13 @@ public class New {
 
     public void setFullText(String fullText) {
         this.fullText = fullText;
+    }
+
+    public Bitmap getImageBitmap() {
+        return imageBitmap;
+    }
+
+    public void setImageBitmap(Bitmap imageBitmap) {
+        this.imageBitmap = imageBitmap;
     }
 }

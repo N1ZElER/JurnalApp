@@ -1,9 +1,13 @@
 package com.example.jurnals.Adapter;
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,6 +18,8 @@ import com.example.jurnals.Models.New;
 import com.example.jurnals.R;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -48,9 +54,19 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
 
         if (news.isExpanded()) {
             holder.detailTextView.setVisibility(View.VISIBLE);
-            holder.detailTextView.setText(news.getFullText());
+            holder.detailTextView.setText(news.getFullText() == null ? "" : news.getFullText());
+
+            if (news.getImageBitmap() != null) {
+                holder.detailImageView.setVisibility(View.VISIBLE);
+                holder.detailImageView.setImageBitmap(news.getImageBitmap());
+            } else {
+                holder.detailImageView.setVisibility(View.GONE);
+                holder.detailImageView.setImageDrawable(null);
+            }
         } else {
             holder.detailTextView.setVisibility(View.GONE);
+            holder.detailImageView.setVisibility(View.GONE);
+            holder.detailImageView.setImageDrawable(null);
         }
 
         holder.itemView.setOnClickListener(v -> {
@@ -60,7 +76,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
                 return;
             }
 
-            loadNewsDetails(news,position);
+            loadNewsDetails(news, position);
         });
     }
 
@@ -75,15 +91,17 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
                     @Override
                     public void onResponse(Call<New> call, Response<New> response) {
                         if (response.isSuccessful() && response.body() != null) {
-
                             String html = response.body().getText_bbs();
 
-                            String cleanText = android.text.Html.fromHtml(
-                                    html,
-                                    android.text.Html.FROM_HTML_MODE_LEGACY
-                            ).toString();
+                            String textOnly = Html.fromHtml(
+                                    removeImgTags(html),
+                                    Html.FROM_HTML_MODE_LEGACY
+                            ).toString().trim();
 
-                            news.setFullText(cleanText);
+                            Bitmap bitmap = extractBase64Image(html);
+
+                            news.setFullText(textOnly.isEmpty() ? " " : textOnly);
+                            news.setImageBitmap(bitmap);
                             news.setExpanded(true);
 
                             notifyItemChanged(position);
@@ -97,14 +115,44 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
                 });
     }
 
+    private String removeImgTags(String html) {
+        if (html == null) return "";
+        return html.replaceAll("(?i)<img[^>]*>", "");
+    }
+
+    private Bitmap extractBase64Image(String html) {
+        if (html == null) return null;
+
+        Pattern pattern = Pattern.compile(
+                "src\\s*=\\s*\"data:image/[^;]+;base64,([^\"]+)\"",
+                Pattern.CASE_INSENSITIVE
+        );
+
+        Matcher matcher = pattern.matcher(html);
+
+        if (matcher.find()) {
+            try {
+                String base64 = matcher.group(1);
+                byte[] bytes = android.util.Base64.decode(base64, android.util.Base64.DEFAULT);
+                return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return null;
+    }
+
     static class NewsViewHolder extends RecyclerView.ViewHolder {
         TextView date, spec, detailTextView;
+        ImageView detailImageView;
 
         public NewsViewHolder(@NonNull View itemView) {
             super(itemView);
             date = itemView.findViewById(R.id.examDate);
             spec = itemView.findViewById(R.id.examSpec);
             detailTextView = itemView.findViewById(R.id.detailTextView);
+            detailImageView = itemView.findViewById(R.id.detailImageView);
         }
     }
 }
