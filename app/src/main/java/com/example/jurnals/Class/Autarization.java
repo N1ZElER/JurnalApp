@@ -134,7 +134,6 @@ public class Autarization extends AppCompatActivity {
                     finish();
 
                 } else {
-                    // Авто-вход не удался
                     if (!saveCredentials) {
                         statusText.setText("Авто-вход не удался, введите логин и пароль");
                         statusText.setVisibility(TextView.VISIBLE);
