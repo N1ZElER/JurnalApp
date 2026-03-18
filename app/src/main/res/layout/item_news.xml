@@ -17,7 +17,7 @@
         android:padding="16dp"
         android:background="#0DFFFFFF">
 
-        <!-- стеклянная акцент линия -->
+
         <View
             android:id="@+id/accentLine"
             android:layout_width="4dp"

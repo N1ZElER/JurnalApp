@@ -8,12 +8,15 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
@@ -32,6 +35,8 @@ import com.example.jurnals.Class.News;
 import com.example.jurnals.Models.Lesson;
 import com.example.jurnals.Models.Visit;
 import com.example.jurnals.Notification.NotificationHelper;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.navigation.NavigationView;
 
@@ -57,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
     ScheduleAdapter adapter;
     List<Lesson> lessons;
     String selectedDate;
+    View dragHandle;
+    private BottomSheetBehavior<MaterialCardView> bottomSheetBehavior;
+    private MaterialCardView contentCard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
         menu = findViewById(R.id.menu);
         settings = findViewById(R.id.settings);
         dateText = findViewById(R.id.dateText);
@@ -84,6 +93,12 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = findViewById(R.id.drawerLayout);
         swipeRefresh = findViewById(R.id.swipeRefresh);
         calendarBtn = findViewById(R.id.calendarBtn);
+        dragHandle = findViewById(R.id.dragHandle);
+        contentCard = findViewById(R.id.contentCard);
+
+        setupBottomSheet();
+        setupHandleClick();
+
 
         dateText.setText("Сегодня");
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -343,6 +358,63 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, Autarization.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+    }
+
+
+    private void setupBottomSheet() {
+        bottomSheetBehavior = BottomSheetBehavior.from(contentCard);
+
+        bottomSheetBehavior.setHideable(false);
+        bottomSheetBehavior.setDraggable(true);
+
+
+        bottomSheetBehavior.setFitToContents(false);
+
+
+        bottomSheetBehavior.setSkipCollapsed(false);
+
+        contentCard.post(() -> {
+            View parent = (View) contentCard.getParent();
+            int parentHeight = parent.getHeight();
+
+            int peekHeight = (int) (parentHeight * 0.73f);
+            bottomSheetBehavior.setPeekHeight(peekHeight, true);
+
+            bottomSheetBehavior.setExpandedOffset(dpToPx(110));
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        });
+
+        bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                if (slideOffset < 0f) {
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                }
+            }
+        });
+    }
+
+    private void setupHandleClick() {
+        dragHandle.setOnClickListener(v -> {
+            int state = bottomSheetBehavior.getState();
+
+            if (state == BottomSheetBehavior.STATE_COLLAPSED) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            } else if (state == BottomSheetBehavior.STATE_EXPANDED) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+        });
+    }
+
+    private int dpToPx(int dp) {
+        return Math.round(dp * getResources().getDisplayMetrics().density);
     }
 
 
