@@ -1,25 +1,28 @@
-<?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/examCard"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="12dp"
     app:cardCornerRadius="18dp"
-    app:cardElevation="2dp"
-    app:cardBackgroundColor="@android:color/white">
+    app:cardElevation="0dp"
+    app:cardBackgroundColor="#14FFFFFF"
+    app:strokeWidth="1dp"
+    app:strokeColor="#33FFFFFF">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:background="#0DFFFFFF">
 
+        <!-- стеклянная акцент линия -->
         <View
             android:id="@+id/accentLine"
             android:layout_width="4dp"
             android:layout_height="0dp"
-            android:background="#1F2937"
+            android:background="#40FFFFFF"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
@@ -30,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:text="null"
-            android:textColor="#111827"
+            android:textColor="@android:color/white"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent"
@@ -44,8 +47,7 @@
             android:layout_marginStart="12dp"
             android:layout_marginTop="6dp"
             android:text="null"
-            android:textColor="#6B7280"
-            android:linksClickable="true"
+            android:textColor="#B3FFFFFF"
             android:textSize="13sp"
             app:layout_constraintTop_toBottomOf="@id/examDate"
             app:layout_constraintStart_toEndOf="@id/accentLine"/>
@@ -56,10 +58,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:layout_marginTop="10dp"
-            android:textColor="#374151"
+            android:textColor="#CCFFFFFF"
             android:textSize="14sp"
             android:visibility="gone"
-            android:linksClickable="true"
             app:layout_constraintTop_toBottomOf="@id/examSpec"
             app:layout_constraintStart_toEndOf="@id/accentLine"
             app:layout_constraintEnd_toEndOf="parent"/>
@@ -76,8 +77,8 @@
             app:layout_constraintTop_toBottomOf="@id/detailTextView"
             app:layout_constraintStart_toEndOf="@id/accentLine"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            tools:src="@drawable/ic_launcher_foreground"/>
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </com.google.android.material.card.MaterialCardView>

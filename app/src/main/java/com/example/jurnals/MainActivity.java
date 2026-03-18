@@ -177,6 +177,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadSchedule(String date) {
+        swipeRefresh.setEnabled(false);
+
+        swipeRefresh.setRefreshing(true);
 
         SharedPreferences prefs = getSharedPreferences("auth", MODE_PRIVATE);
         String token = prefs.getString("token", null);
@@ -219,6 +222,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<Lesson>> call, Throwable t) {
+                swipeRefresh.setEnabled(false);
                 swipeRefresh.setRefreshing(false);
                 Toast.makeText(MainActivity.this, "Ошибка сети, проверте подключение к интернету", Toast.LENGTH_SHORT).show();
                 dateText.setText("❌ Ошибка подключения");

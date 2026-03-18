@@ -108,6 +108,7 @@ public class Ekzam extends AppCompatActivity {
     }
 
     private void loadExam() {
+        swipeRefresh.setEnabled(false);
 
         swipeRefresh.setRefreshing(true);
 
@@ -149,12 +150,11 @@ public class Ekzam extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Call<List<Exam>> call, Throwable t) {
+                        swipeRefresh.setEnabled(false);
 
                         swipeRefresh.setRefreshing(false);
 
                         dateText.setText("❌ Ошибка подключения");
-
-//                        Toast.makeText(Ekzam.this, "Ошибка сети, проверте подключение к интернету", Toast.LENGTH_SHORT).show();
                     }
                 });
     }

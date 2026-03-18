@@ -106,6 +106,7 @@ public class News extends AppCompatActivity {
     }
 
     private void loadNews() {
+        swipeRefresh.setEnabled(false);
         swipeRefresh.setRefreshing(true);
 
         SharedPreferences prefs = getSharedPreferences("auth", MODE_PRIVATE);
@@ -139,6 +140,7 @@ public class News extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<New>> call, Throwable t) {
+                swipeRefresh.setEnabled(false);
                 swipeRefresh.setRefreshing(false);
                 dateText.setText("❌ Ошибка подключения");
             }

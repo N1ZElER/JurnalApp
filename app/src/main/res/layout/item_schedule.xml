@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -7,22 +6,23 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="12dp"
     app:cardCornerRadius="18dp"
-    app:cardElevation="2dp"
-    app:cardBackgroundColor="@android:color/white"
-    app:strokeWidth="2dp"
-    app:strokeColor="#D1D5DB">
+    app:cardElevation="0dp"
+    app:cardBackgroundColor="#14FFFFFF"
+    app:strokeWidth="1dp"
+    app:strokeColor="#33FFFFFF">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:background="#0DFFFFFF">
 
         <TextView
             android:id="@+id/examDate"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="null"
-            android:textColor="#111827"
+            android:textColor="@android:color/white"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent"
@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:text="null"
-            android:textColor="#6B7280"
+            android:textColor="#B3FFFFFF"
             android:textSize="14sp"
             app:layout_constraintTop_toBottomOf="@id/examDate"
             app:layout_constraintStart_toStartOf="parent"

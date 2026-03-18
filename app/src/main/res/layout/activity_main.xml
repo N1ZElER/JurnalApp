@@ -150,11 +150,15 @@
                 android:id="@+id/contentCard"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="12dp"
-                app:cardBackgroundColor="#F1F3F7"
+                app:cardBackgroundColor="#1AFFFFFF"
                 app:cardCornerRadius="28dp"
-                app:cardElevation="8dp"
+                app:cardElevation="0dp"
+                app:strokeColor="#33FFFFFF"
+                app:strokeWidth="1dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -162,7 +166,8 @@
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:background="#0DFFFFFF">
 
                     <View
                         android:id="@+id/dragHandle"
@@ -181,7 +186,7 @@
                         android:layout_marginStart="20dp"
                         android:layout_marginTop="20dp"
                         android:text="Пары на сегодня"
-                        android:textColor="#111827"
+                        android:textColor="@android:color/white"
                         android:textSize="20sp"
                         android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"
