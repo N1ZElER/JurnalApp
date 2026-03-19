@@ -117,6 +117,11 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         }
 
         holder.card.setStrokeColor(color);
+
+
+
+
+        holder.itemView.setOnClickListener(v -> {});
     }
 
     @Override

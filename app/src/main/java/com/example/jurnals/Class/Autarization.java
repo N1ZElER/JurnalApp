@@ -28,7 +28,6 @@ public class Autarization extends AppCompatActivity {
     private TextView statusText;
     private ApiService api;
     private SharedPreferences prefs;
-
     private long lastClickTime = 0;
     private static final long DOUBLE_CLICK_DELAY = 300;
 

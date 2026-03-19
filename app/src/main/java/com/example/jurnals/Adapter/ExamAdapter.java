@@ -39,6 +39,8 @@ public class ExamAdapter extends RecyclerView.Adapter<ExamAdapter.ExamViewHolder
 
         holder.date.setText("📅 " + exam.getDate());
         holder.spec.setText(exam.getSpec());
+
+        holder.itemView.setOnClickListener(v -> {});
     }
 
     @Override

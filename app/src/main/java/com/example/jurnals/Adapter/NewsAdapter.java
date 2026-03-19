@@ -88,6 +88,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
 
             loadNewsDetails(news, position);
         });
+
     }
 
     @Override
