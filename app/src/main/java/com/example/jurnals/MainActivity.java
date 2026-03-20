@@ -84,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
         menu = findViewById(R.id.menu);
         settings = findViewById(R.id.settings);
         dateText = findViewById(R.id.dateText);

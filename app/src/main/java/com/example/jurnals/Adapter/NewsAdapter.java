@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.getstream.photoview.PhotoView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -89,6 +90,14 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
             loadNewsDetails(news, position);
         });
 
+
+        holder.detailImageView.setOnClickListener(v -> {
+            if (news.getImageBitmap() != null) {
+                showImageDialog(v, news.getImageBitmap());
+                holder.detailImageView.setVisibility(View.VISIBLE);
+            }
+        });
+
     }
 
     @Override
@@ -126,11 +135,13 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
                 });
     }
 
+    //Load photo
     private String removeImgTags(String html) {
         if (html == null) return "";
         return html.replaceAll("(?i)<img[^>]*>", "");
     }
 
+    //Load photo
     private Bitmap extractBase64Image(String html) {
         if (html == null) return null;
 
@@ -155,15 +166,32 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         return null;
     }
 
+
+    // On All Screen
+    private void showImageDialog(View view, Bitmap bitmap) {
+        android.app.Dialog dialog = new android.app.Dialog(view.getContext(), android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+        dialog.setContentView(R.layout.full_image);
+
+        PhotoView imageView;
+        imageView = dialog.findViewById(R.id.fullImageView);
+
+        imageView.setImageBitmap(bitmap);
+
+        imageView.setOnClickListener(v -> dialog.dismiss());
+
+        dialog.show();
+    }
+
     static class NewsViewHolder extends RecyclerView.ViewHolder {
         TextView date, spec, detailTextView;
-        ImageView detailImageView;
+        ImageView detailImageView, fullImageView;
 
         public NewsViewHolder(@NonNull View itemView) {
             super(itemView);
             date = itemView.findViewById(R.id.examDate);
             spec = itemView.findViewById(R.id.examSpec);
             detailTextView = itemView.findViewById(R.id.detailTextView);
+            fullImageView = itemView.findViewById(R.id.fullImageView);
             detailImageView = itemView.findViewById(R.id.detailImageView);
         }
     }

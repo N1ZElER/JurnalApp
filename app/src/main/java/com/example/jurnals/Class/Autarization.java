@@ -8,6 +8,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.jurnals.API.ApiService;
+import com.example.jurnals.Client.RetrofitClient;
 import com.example.jurnals.MainActivity;
 import com.example.jurnals.Models.Auth;
 import com.example.jurnals.R;
@@ -18,8 +19,6 @@ import com.google.android.material.textfield.TextInputEditText;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Autarization extends AppCompatActivity {
 
@@ -43,12 +42,8 @@ public class Autarization extends AppCompatActivity {
 
         prefs = getSharedPreferences("auth", MODE_PRIVATE);
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://msapi.top-academy.ru/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
 
-        api = retrofit.create(ApiService.class);
+        api = RetrofitClient.getInstance().create(ApiService.class);
 
         checkTokenAndLogin();
 

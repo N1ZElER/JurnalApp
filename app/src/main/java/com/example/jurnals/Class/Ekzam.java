@@ -1,6 +1,5 @@
 package com.example.jurnals.Class;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,22 +8,18 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
 import androidx.core.view.GravityCompat;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.jurnals.API.ApiService;
+import com.example.jurnals.Client.RetrofitClient;
 import com.example.jurnals.Adapter.ExamAdapter;
 import com.example.jurnals.MainActivity;
 import com.example.jurnals.Models.Exam;
 import com.example.jurnals.R;
-import com.example.jurnals.Response.ExamResponse;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
@@ -33,8 +28,6 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Ekzam extends AppCompatActivity {
 
@@ -67,12 +60,8 @@ public class Ekzam extends AppCompatActivity {
         examAdapter = new ExamAdapter(exams);
         recyclerView.setAdapter(examAdapter);
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://msapi.top-academy.ru/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
 
-        api = retrofit.create(ApiService.class);
+        api = RetrofitClient.getInstance().create(ApiService.class);
 
 
         menu.setOnClickListener(v -> {

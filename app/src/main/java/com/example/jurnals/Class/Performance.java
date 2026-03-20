@@ -7,23 +7,17 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
 import androidx.core.view.GravityCompat;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.jurnals.API.ApiService;
+import com.example.jurnals.Client.RetrofitClient;
 import com.example.jurnals.MainActivity;
 import com.example.jurnals.R;
 import com.google.android.material.navigation.NavigationView;
-
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Performance extends AppCompatActivity {
 
@@ -50,12 +44,7 @@ public class Performance extends AppCompatActivity {
 
 
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://msapi.top-academy.ru/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        api = retrofit.create(ApiService.class);
+        api = RetrofitClient.getInstance().create(ApiService.class);
 
 
         menu.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));

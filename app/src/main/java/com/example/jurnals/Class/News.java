@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.jurnals.API.ApiService;
+import com.example.jurnals.Client.RetrofitClient;
 import com.example.jurnals.Adapter.NewsAdapter;
 import com.example.jurnals.MainActivity;
 import com.example.jurnals.Models.New;
@@ -30,8 +31,6 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class News extends AppCompatActivity {
 
@@ -63,12 +62,8 @@ public class News extends AppCompatActivity {
 
         newsList = new ArrayList<>();
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://msapi.top-academy.ru/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
 
-        api = retrofit.create(ApiService.class);
+        api = RetrofitClient.getInstance().create(ApiService.class);
 
         SharedPreferences prefs = getSharedPreferences("auth", MODE_PRIVATE);
         String token = prefs.getString("token", null);

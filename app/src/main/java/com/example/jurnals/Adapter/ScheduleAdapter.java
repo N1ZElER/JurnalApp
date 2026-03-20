@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.jurnals.Models.Exam;
 import com.example.jurnals.Models.Lesson;
 import com.example.jurnals.R;
 import com.google.android.material.card.MaterialCardView;
@@ -107,9 +108,9 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                     LocalTime end = LocalTime.parse(endRaw);
                     LocalTime now = LocalTime.now();
 
-                    if(now.isAfter(start) && now.isBefore(end)){
-                        color = holder.itemView.getResources().getColor(R.color.lesson_now);
-                    }
+//                    if(now.isAfter(start) && now.isBefore(end)){
+//                        color = holder.itemView.getResources().getColor(R.color.lesson_now);
+//                    }
                 }
 
             } catch (Exception ignored){}
@@ -117,7 +118,6 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         }
 
         holder.card.setStrokeColor(color);
-
 
 
 
