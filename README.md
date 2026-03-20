@@ -54,6 +54,7 @@ The app uses **Retrofit** to communicate with the official API and requires auth
 * **Material Components**
 * **SwipeRefreshLayout**
 * **PhotoView**
+* **BumpTech (Glide)**
 
 ---
 
