@@ -53,6 +53,7 @@ The app uses **Retrofit** to communicate with the official API and requires auth
 * **RecyclerView**
 * **Material Components**
 * **SwipeRefreshLayout**
+* **PhotoView**
 
 ---
 
