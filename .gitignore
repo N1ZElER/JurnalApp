@@ -17,6 +17,8 @@ app/src/main/shared_prefs/
 
 # Секреты
 Models/Auth.java
+app/src/main/java/com/example/jurnals/Client/MyServerClient.java
+app/google-services.json
 
 # Логи и временные файлы
 *.log
