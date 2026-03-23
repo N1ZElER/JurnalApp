@@ -12,8 +12,12 @@
         android:icon="@mipmap/academy"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/academy"
+        android:usesCleartextTraffic="true"
         android:supportsRtl="true"
         android:theme="@style/Theme.Jurnals">
+        <activity
+            android:name=".Class.OzevsActivity"
+            android:exported="false" />
         <activity
             android:name=".Adapter.NewsAdapter"
             android:exported="false" />
@@ -37,7 +41,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

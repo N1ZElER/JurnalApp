@@ -7,12 +7,12 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.jurnals.API.ApiService;
-import com.example.jurnals.Client.RetrofitClient;
+import com.example.jurnals.API.MyServerApi;
+import com.example.jurnals.Client.MyServerClient;
 import com.example.jurnals.MainActivity;
-import com.example.jurnals.Models.Auth;
+import com.example.jurnals.Models.BackendLoginRequest;
 import com.example.jurnals.R;
-import com.example.jurnals.Response.LoginResponse;
+import com.example.jurnals.Response.BackendLoginResponse;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -25,7 +25,7 @@ public class Autarization extends AppCompatActivity {
     private TextInputEditText usernameInput, passwordInput;
     private MaterialButton loginButton;
     private TextView statusText;
-    private ApiService api;
+    private MyServerApi api;
     private SharedPreferences prefs;
     private long lastClickTime = 0;
     private static final long DOUBLE_CLICK_DELAY = 300;
@@ -41,9 +41,7 @@ public class Autarization extends AppCompatActivity {
         statusText = findViewById(R.id.statusText);
 
         prefs = getSharedPreferences("auth", MODE_PRIVATE);
-
-
-        api = RetrofitClient.getInstance().create(ApiService.class);
+        api = MyServerClient.getInstance().create(MyServerApi.class);
 
         checkTokenAndLogin();
 
@@ -77,16 +75,15 @@ public class Autarization extends AppCompatActivity {
         if (savedUsername != null && savedPassword != null) {
             statusText.setText("Сессия устарела, выполняем авто-вход...");
             statusText.setVisibility(TextView.VISIBLE);
-            autoLogin(savedUsername, savedPassword);
+            doLogin(savedUsername, savedPassword, false);
         } else {
-            statusText.setText("Введите данные заново");
             statusText.setVisibility(TextView.GONE);
         }
     }
 
     private void login() {
-        String username = usernameInput.getText().toString().trim();
-        String password = passwordInput.getText().toString().trim();
+        String username = usernameInput.getText() != null ? usernameInput.getText().toString().trim() : "";
+        String password = passwordInput.getText() != null ? passwordInput.getText().toString().trim() : "";
 
         if (username.isEmpty() || password.isEmpty()) {
             statusText.setText("Введите логин и пароль");
@@ -94,22 +91,17 @@ public class Autarization extends AppCompatActivity {
             return;
         }
 
-        statusText.setVisibility(TextView.GONE);
         doLogin(username, password, true);
     }
 
-    private void autoLogin(String username, String password) {
-        doLogin(username, password, false);
-    }
+    private void doLogin(String username, String password, boolean saveLocalCredentials) {
+        BackendLoginRequest request = new BackendLoginRequest(username, password);
 
-    private void doLogin(String username, String password, boolean saveCredentials) {
-        Auth auth = new Auth(username, password);
-
-        api.login(auth).enqueue(new Callback<LoginResponse>() {
+        api.login(request).enqueue(new Callback<BackendLoginResponse>() {
             @Override
-            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+            public void onResponse(Call<BackendLoginResponse> call, Response<BackendLoginResponse> response) {
 
-                if (response.isSuccessful() && response.body() != null) {
+                if (response.isSuccessful() && response.body() != null && response.body().isOk()) {
                     String token = response.body().getAccessToken();
                     long expiryTime = System.currentTimeMillis() + (24 * 60 * 60 * 1000);
 
@@ -117,7 +109,7 @@ public class Autarization extends AppCompatActivity {
                     editor.putString("token", token);
                     editor.putLong("tokenExpiry", expiryTime);
 
-                    if (saveCredentials) {
+                    if (saveLocalCredentials) {
                         editor.putString("username", username);
                         editor.putString("password", password);
                     }
@@ -128,20 +120,14 @@ public class Autarization extends AppCompatActivity {
                     finish();
 
                 } else {
-                    if (!saveCredentials) {
-                        statusText.setText("Авто-вход не удался, введите логин и пароль");
-                        statusText.setVisibility(TextView.VISIBLE);
-                    } else {
-                        statusText.setText("Неверный логин или пароль");
-                        statusText.setVisibility(TextView.VISIBLE);
-                    }
+                    statusText.setText("Ошибка входа: " + response.code());
+                    statusText.setVisibility(TextView.VISIBLE);
                 }
-
             }
 
             @Override
-            public void onFailure(Call<LoginResponse> call, Throwable t) {
-                statusText.setText("Ошибка сети, проверьте подключение к интернету");
+            public void onFailure(Call<BackendLoginResponse> call, Throwable t) {
+                statusText.setText("Ошибка сети: " + t.getMessage());
                 statusText.setVisibility(TextView.VISIBLE);
             }
         });
