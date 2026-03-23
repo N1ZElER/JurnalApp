@@ -17,6 +17,12 @@
         />
 
     <item
+        android:id="@+id/nav_ozevs"
+        android:title="Отзывы  о студенте"
+        android:checkable="true"
+        />
+
+    <item
         android:id="@+id/nav_performance"
         android:title="Успеваемость"
         android:checkable="true"

@@ -4,6 +4,7 @@ import com.example.jurnals.Models.Auth;
 import com.example.jurnals.Models.Exam;
 import com.example.jurnals.Models.Lesson;
 import com.example.jurnals.Models.New;
+import com.example.jurnals.Models.Ozevs;
 import com.example.jurnals.Models.Visit;
 import com.example.jurnals.Response.LoginResponse;
 
@@ -82,4 +83,15 @@ public interface ApiService {
             @Header("Authorization") String token,
             @Query("news_id") int newsId
     );
+
+
+    @Headers({
+            "origin: https://journal.top-academy.ru",
+            "referer: https://journal.top-academy.ru/",
+            "accept-language: ru_RU, ru",
+            "user-agent: Mozilla/5.0"
+    })
+    @GET("api/v2/reviews/index/list")
+    Call<List<Ozevs>> getOzevs
+            (@Header("Authorization") String token);
 }
