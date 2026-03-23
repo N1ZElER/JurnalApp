@@ -8,11 +8,11 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.jurnals.API.MyServerApi;
+import com.example.jurnals.BackendModels.BackendLoginRequest;
+import com.example.jurnals.BackendModels.BackendLoginResponse;
 import com.example.jurnals.Client.MyServerClient;
 import com.example.jurnals.MainActivity;
-import com.example.jurnals.Models.BackendLoginRequest;
 import com.example.jurnals.R;
-import com.example.jurnals.Response.BackendLoginResponse;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 

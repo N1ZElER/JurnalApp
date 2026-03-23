@@ -1,4 +1,4 @@
-package com.example.jurnals.Response;
+package com.example.jurnals.BackendModels;
 
 import com.google.gson.annotations.SerializedName;
 

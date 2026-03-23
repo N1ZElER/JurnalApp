@@ -1,4 +1,4 @@
-package com.example.jurnals.Models;
+package com.example.jurnals.BackendModels;
 
 public class DeviceTokenRequest {
     private String fcmToken;

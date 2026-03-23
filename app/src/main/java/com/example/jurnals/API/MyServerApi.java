@@ -2,9 +2,10 @@ package com.example.jurnals.API;
 
 
 
-import com.example.jurnals.Models.BackendLoginRequest;
-import com.example.jurnals.Models.DeviceTokenRequest;
-import com.example.jurnals.Response.BackendLoginResponse;
+import com.example.jurnals.BackendModels.BackendLoginRequest;
+import com.example.jurnals.BackendModels.BackendLoginResponse;
+import com.example.jurnals.BackendModels.DeviceTokenRequest;
+
 
 import retrofit2.Call;
 import retrofit2.http.Body;

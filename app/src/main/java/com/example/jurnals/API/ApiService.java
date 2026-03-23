@@ -22,17 +22,6 @@ public interface ApiService {
 
     @Headers({
             "accept-language: ru_RU, ru",
-            "authorization: Bearer null",
-            "origin: https://journal.top-academy.ru",
-            "referer: https://journal.top-academy.ru/",
-            "user-agent: Mozilla/5.0"
-    })
-    @POST("api/v2/auth/login")
-    Call<LoginResponse> login(@Body Auth auth);
-
-
-    @Headers({
-            "accept-language: ru_RU, ru",
             "origin: https://journal.top-academy.ru",
             "referer: https://journal.top-academy.ru/",
             "user-agent: Mozilla/5.0"
