@@ -15,11 +15,9 @@
         android:usesCleartextTraffic="true"
         android:supportsRtl="true"
         android:theme="@style/Theme.Jurnals">
+
         <activity
             android:name=".Class.OzevsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Adapter.NewsAdapter"
             android:exported="false" />
         <activity
             android:name=".Class.Performance"
@@ -36,15 +34,24 @@
         <activity
             android:name=".Class.Autarization"
             android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".Notification.MyFirebaseService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>

@@ -17,14 +17,25 @@ public class MyFirebaseService extends FirebaseMessagingService {
     public void onMessageReceived(@NonNull RemoteMessage message) {
         super.onMessageReceived(message);
 
-        if (!message.getData().isEmpty()) {
-            String title = message.getData().get("title");
-            String body = message.getData().get("body");
+        String title = null;
+        String body = null;
 
-            if (title == null) title = "Посещение";
-            if (body == null) body = "Обновился статус посещения";
-
-            NotificationHelper.show(this, title, body);
+        if (message.getNotification() != null) {
+            title = message.getNotification().getTitle();
+            body = message.getNotification().getBody();
         }
+
+        if (title == null && !message.getData().isEmpty()) {
+            title = message.getData().get("title");
+        }
+
+        if (body == null && !message.getData().isEmpty()) {
+            body = message.getData().get("body");
+        }
+
+        if (title == null) title = "Посещение";
+        if (body == null) body = "Обновился статус посещения";
+
+        NotificationHelper.show(this, title, body);
     }
 }
