@@ -48,6 +48,7 @@ The app uses **Retrofit** to communicate with the official API and requires auth
 
 * **Java**
 * **Android SDK**
+* **Firebase Cloud Messaging (FCM)**
 * **Retrofit2**
 * **Gson**
 * **RecyclerView**
