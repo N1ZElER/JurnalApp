@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_main);
-        requestNotificationPermission();
+//        requestNotificationPermission();
 
 
 
@@ -244,8 +244,99 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void loadVisits() {
+//    private void loadVisits() {
+//
+//        SharedPreferences authPrefs = getSharedPreferences("auth", MODE_PRIVATE);
+//        String token = authPrefs.getString("token", null);
+//
+//        if (token == null) {
+//            redirectToAuth();
+//            return;
+//        }
+//
+//        SharedPreferences visitPrefs = getSharedPreferences("visits", MODE_PRIVATE);
+//
+//        api.getVisits("Bearer " + token).enqueue(new Callback<List<Visit>>() {
+//
+//            @Override
+//            public void onResponse(Call<List<Visit>> call, Response<List<Visit>> response) {
+//
+//                if (response.code() == 401) {
+//                    redirectToAuth();
+//                    return;
+//                }
+//
+//                if (response.isSuccessful() && response.body() != null) {
+//
+//                    List<Visit> visits = response.body();
+//
+//                    if (lessons == null) return;
+//
+//                    for (Lesson lesson : lessons) {
+//                        lesson.setStatusWas(null);
+//                        lesson.setClassWorkMark(null);
+//                        lesson.setHomeWorkMark(null);
+//                        lesson.setLabWorkMark(null);
+//
+//                        for (Visit visit : visits) {
+//
+//                            String visitDate = visit.getDateVisit();
+//                            if (visitDate == null || visitDate.length() < 10) continue;
+//                            visitDate = visitDate.substring(0, 10);
+//
+//                            if (visitDate.equals(selectedDate) && lesson.getLesson() == visit.getLessonNumber()) {
+//
+//                                lesson.setStatusWas(visit.getStatusWas());
+//                                lesson.setClassWorkMark(visit.getClassWorkMark());
+//                                lesson.setHomeWorkMark(visit.getHomeWorkMark());
+//                                lesson.setLabWorkMark(visit.getLabWorkMark());
+//                                String key = selectedDate + "_lesson_" + lesson.getLesson();
+//                                int savedStatus = visitPrefs.getInt(key, -1);
+//
+//                                if (savedStatus != visit.getStatusWas()) {
+//
+//                                    String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+//
+//                                    if (selectedDate.equals(today)) {
+//                                        if (visit.getStatusWas() == 1) {
+//                                            NotificationHelper.show(
+//                                                    MainActivity.this,
+//                                                    "Посещение",
+//                                                    "Ты отмечен на " + lesson.getLesson() + " паре"
+//                                            );
+//                                        } else {
+//                                            NotificationHelper.show(
+//                                                    MainActivity.this,
+//                                                    "Посещение",
+//                                                    "У тебя пропуск на " + lesson.getLesson() + " паре"
+//                                            );
+//                                        }
+//                                    }
+//
+//                                    visitPrefs.edit()
+//                                            .putInt(key, visit.getStatusWas())
+//                                            .apply();
+//                                }
+//
+//                                break;
+//                            }
+//                        }
+//                    }
+//
+//                    if (adapter != null) {
+//                        adapter.notifyDataSetChanged();
+//                    }
+//
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<List<Visit>> call, Throwable t) {}
+//        });
+//    }
 
+
+    private void loadVisits() {
         SharedPreferences authPrefs = getSharedPreferences("auth", MODE_PRIVATE);
         String token = authPrefs.getString("token", null);
 
@@ -254,20 +345,15 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        SharedPreferences visitPrefs = getSharedPreferences("visits", MODE_PRIVATE);
-
         api.getVisits("Bearer " + token).enqueue(new Callback<List<Visit>>() {
-
             @Override
             public void onResponse(Call<List<Visit>> call, Response<List<Visit>> response) {
-
                 if (response.code() == 401) {
                     redirectToAuth();
                     return;
                 }
 
                 if (response.isSuccessful() && response.body() != null) {
-
                     List<Visit> visits = response.body();
 
                     if (lessons == null) return;
@@ -279,45 +365,15 @@ public class MainActivity extends AppCompatActivity {
                         lesson.setLabWorkMark(null);
 
                         for (Visit visit : visits) {
-
                             String visitDate = visit.getDateVisit();
                             if (visitDate == null || visitDate.length() < 10) continue;
                             visitDate = visitDate.substring(0, 10);
 
                             if (visitDate.equals(selectedDate) && lesson.getLesson() == visit.getLessonNumber()) {
-
                                 lesson.setStatusWas(visit.getStatusWas());
                                 lesson.setClassWorkMark(visit.getClassWorkMark());
                                 lesson.setHomeWorkMark(visit.getHomeWorkMark());
                                 lesson.setLabWorkMark(visit.getLabWorkMark());
-                                String key = selectedDate + "_lesson_" + lesson.getLesson();
-                                int savedStatus = visitPrefs.getInt(key, -1);
-
-                                if (savedStatus != visit.getStatusWas()) {
-
-                                    String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-
-                                    if (selectedDate.equals(today)) {
-                                        if (visit.getStatusWas() == 1) {
-                                            NotificationHelper.show(
-                                                    MainActivity.this,
-                                                    "Посещение",
-                                                    "Ты отмечен на " + lesson.getLesson() + " паре"
-                                            );
-                                        } else {
-                                            NotificationHelper.show(
-                                                    MainActivity.this,
-                                                    "Посещение",
-                                                    "У тебя пропуск на " + lesson.getLesson() + " паре"
-                                            );
-                                        }
-                                    }
-
-                                    visitPrefs.edit()
-                                            .putInt(key, visit.getStatusWas())
-                                            .apply();
-                                }
-
                                 break;
                             }
                         }
@@ -326,7 +382,6 @@ public class MainActivity extends AppCompatActivity {
                     if (adapter != null) {
                         adapter.notifyDataSetChanged();
                     }
-
                 }
             }
 
@@ -335,17 +390,17 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void requestNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
-                    != PackageManager.PERMISSION_GRANTED) {
-
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
-                        1001);
-            }
-        }
-    }
+//    private void requestNotificationPermission() {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+//                    != PackageManager.PERMISSION_GRANTED) {
+//
+//                ActivityCompat.requestPermissions(this,
+//                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
+//                        1001);
+//            }
+//        }
+//    }
 
     private void redirectToAuth() {
         SharedPreferences prefs = getSharedPreferences("auth", MODE_PRIVATE);

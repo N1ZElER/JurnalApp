@@ -3,6 +3,7 @@ package com.example.jurnals.Class;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,15 +13,19 @@ import com.example.jurnals.BackendModels.BackendLoginRequest;
 import com.example.jurnals.BackendModels.BackendLoginResponse;
 import com.example.jurnals.Client.MyServerClient;
 import com.example.jurnals.MainActivity;
+import com.example.jurnals.Notification.MyFirebaseService;
 import com.example.jurnals.R;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class Autarization extends AppCompatActivity {
+
+    private static final String TAG = "Autarization";
 
     private TextInputEditText usernameInput, passwordInput;
     private MaterialButton loginButton;
@@ -112,12 +117,33 @@ public class Autarization extends AppCompatActivity {
                     if (saveLocalCredentials) {
                         editor.putString("username", username);
                         editor.putString("password", password);
+                    } else {
+                        editor.putString("username", username);
                     }
 
                     editor.apply();
 
-                    startActivity(new Intent(Autarization.this, MainActivity.class));
-                    finish();
+                    SharedPreferences appPrefs = getSharedPreferences("app", MODE_PRIVATE);
+                    appPrefs.edit().putString("username", username).apply();
+
+                    Log.d(TAG, "login ok, username saved to auth + app prefs: " + username);
+
+                    FirebaseMessaging.getInstance().getToken()
+                            .addOnCompleteListener(task -> {
+                                if (!task.isSuccessful()) {
+                                    Log.e(TAG, "FCM getToken failed", task.getException());
+                                } else {
+                                    String fcmToken = task.getResult();
+                                    Log.d(TAG, "CURRENT TOKEN AFTER LOGIN = " + fcmToken);
+                                    Log.d(TAG, "CURRENT TOKEN LEN = " + (fcmToken == null ? 0 : fcmToken.length()));
+
+                                    MyFirebaseService.sendCurrentTokenNow(Autarization.this, username);
+                                    MyFirebaseService.sendSavedTokenIfPossible(Autarization.this);
+                                }
+
+                                startActivity(new Intent(Autarization.this, MainActivity.class));
+                                finish();
+                            });
 
                 } else {
                     statusText.setText("Ошибка входа: " + response.code());

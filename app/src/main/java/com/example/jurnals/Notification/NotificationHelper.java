@@ -8,7 +8,6 @@ import android.os.Build;
 import androidx.core.app.NotificationCompat;
 
 public class NotificationHelper {
-
     public static void show(Context context, String title, String text){
 
         String channelId = "journal_channel";
