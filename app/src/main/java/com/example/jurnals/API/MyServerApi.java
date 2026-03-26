@@ -4,6 +4,7 @@ package com.example.jurnals.API;
 
 import com.example.jurnals.BackendModels.BackendLoginRequest;
 import com.example.jurnals.BackendModels.BackendLoginResponse;
+import com.example.jurnals.BackendModels.DeviceTokenRequest;
 
 
 import retrofit2.Call;
@@ -21,4 +22,7 @@ public interface MyServerApi {
     })
     @POST("/api/login")
     Call<BackendLoginResponse> login(@Body BackendLoginRequest request);
+
+    @POST("/api/device-token")
+    Call<Void> sendDeviceToken(@Body  DeviceTokenRequest request);
 }
