@@ -19,6 +19,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.jurnals.data.remote.api.ApiService;
 import com.example.jurnals.data.remote.client.RetrofitClient;
+import com.example.jurnals.databinding.ActivityAutarizationBinding;
+import com.example.jurnals.databinding.ActivityNewsBinding;
+import com.example.jurnals.databinding.ActivityOzevsBinding;
 import com.example.jurnals.domain.models.Ozev;
 import com.example.jurnals.presentation.exams.Ekzam;
 import com.example.jurnals.MainActivity;
@@ -35,12 +38,7 @@ import retrofit2.Response;
 
 public class Ozevs extends AppCompatActivity {
 
-    SwipeRefreshLayout swipeRefresh;
-    ImageButton settings, menu;
-    TextView dateText;
-    RecyclerView recyclerView;
-    NavigationView navigationView;
-    DrawerLayout drawerLayout;
+    private ActivityOzevsBinding binding;
     ApiService api;
     OzevsAdapter ozevsAdapter;
     Context context;
@@ -50,28 +48,22 @@ public class Ozevs extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ozevs);
 
-        swipeRefresh = findViewById(R.id.swipeRefresh);
-        settings = findViewById(R.id.settings);
-        menu = findViewById(R.id.menu);
-        dateText = findViewById(R.id.dateText);
-        recyclerView = findViewById(R.id.recyclerView);
-        navigationView = findViewById(R.id.navigationView);
-        drawerLayout = findViewById(R.id.drawerLayout);
+        binding = ActivityOzevsBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         context = this;
 
         api = RetrofitClient.getInstance().create(ApiService.class);
 
         ozevsAdapter = new OzevsAdapter(api, ozevsList);
-        recyclerView.setAdapter(ozevsAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        binding.recyclerView.setAdapter(ozevsAdapter);
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         loadOzevs();
 
-        menu.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
+        binding.menu.setOnClickListener(v -> binding.drawerLayout.openDrawer(GravityCompat.START));
 
-        navigationView.setNavigationItemSelectedListener(item -> {
+        binding.navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
 
             if (id == R.id.nav_shedule) {
@@ -85,24 +77,24 @@ public class Ozevs extends AppCompatActivity {
             } else if (id == R.id.nav_performance) {
                 Toast.makeText(this, "Пока в разработке", Toast.LENGTH_SHORT).show();
             } else if (id == R.id.nav_ozevs) {
-                drawerLayout.closeDrawer(GravityCompat.START);
+                binding.drawerLayout.closeDrawer(GravityCompat.START);
             }
 
-            drawerLayout.closeDrawer(GravityCompat.START);
+            binding.drawerLayout.closeDrawer(GravityCompat.START);
             return true;
         });
     }
 
     private void loadOzevs() {
-        swipeRefresh.setEnabled(false);
-        swipeRefresh.setRefreshing(true);
+        binding.swipeRefresh.setEnabled(false);
+        binding.swipeRefresh.setRefreshing(true);
 
         SharedPreferences prefs = getSharedPreferences("auth", MODE_PRIVATE);
         String token = prefs.getString("token", null);
 
         if (token == null) {
-            swipeRefresh.setRefreshing(false);
-            dateText.setText("Токен не найден");
+            binding.swipeRefresh.setRefreshing(false);
+            binding.dateText.setText("Токен не найден");
             return;
         }
 
@@ -110,13 +102,13 @@ public class Ozevs extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<Ozev>> call,
                                    Response<List<Ozev>> response) {
-                swipeRefresh.setRefreshing(false);
+                binding.swipeRefresh.setRefreshing(false);
 
                 if (response.isSuccessful() && response.body() != null) {
                     List<Ozev> newOzevs = response.body();
 
                     if (newOzevs.isEmpty()) {
-                        dateText.setText("Пока что нету отзывов");
+                        binding.dateText.setText("Пока что нету отзывов");
                         ozevsList.clear();
                         ozevsAdapter.notifyDataSetChanged();
                         return;
@@ -130,9 +122,9 @@ public class Ozevs extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<Ozev>> call, Throwable t) {
-                swipeRefresh.setEnabled(false);
-                swipeRefresh.setRefreshing(false);
-                dateText.setText("❌ Ошибка подключения");
+                binding.swipeRefresh.setEnabled(false);
+                binding.swipeRefresh.setRefreshing(false);
+                binding.dateText.setText("❌ Ошибка подключения");
             }
         });
     }
@@ -144,7 +136,7 @@ public class Ozevs extends AppCompatActivity {
     }
 
     private void updateCheckedItem() {
-        MenuItem item = navigationView.getMenu().findItem(getCheckedItemId());
+        MenuItem item = binding.navigationView.getMenu().findItem(getCheckedItemId());
         if (item != null) item.setChecked(true);
     }
 

@@ -34,7 +34,7 @@
             android:name=".presentation.settings.Settings"
             android:exported="false" />
         <activity
-            android:name=".presentation.auth.Autarization"
+            android:name=".presentation.auth.AuthorizationActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

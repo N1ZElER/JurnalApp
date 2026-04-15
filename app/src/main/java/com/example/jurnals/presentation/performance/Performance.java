@@ -15,6 +15,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.jurnals.data.remote.api.ApiService;
 import com.example.jurnals.data.remote.client.RetrofitClient;
+import com.example.jurnals.databinding.ActivityOzevsBinding;
+import com.example.jurnals.databinding.ActivityPerformanceBinding;
 import com.example.jurnals.presentation.exams.Ekzam;
 import com.example.jurnals.MainActivity;
 import com.example.jurnals.R;
@@ -23,35 +25,22 @@ import com.google.android.material.navigation.NavigationView;
 
 public class Performance extends AppCompatActivity {
 
-    ImageButton menu, settings;
-    TextView dateText;
-    RecyclerView recyclerView;
-    NavigationView navigationView;
-    DrawerLayout drawerLayout;
-    SwipeRefreshLayout swipeRefresh;
+    private ActivityPerformanceBinding binding;
     ApiService api;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_performance);
 
-        menu = findViewById(R.id.menu);
-        settings = findViewById(R.id.settings);
-        dateText = findViewById(R.id.dateText);
-        recyclerView = findViewById(R.id.recyclerView);
-        navigationView = findViewById(R.id.navigationView);
-        drawerLayout = findViewById(R.id.drawerLayout);
-        swipeRefresh = findViewById(R.id.swipeRefresh);
-
-
+        binding = ActivityPerformanceBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         api = RetrofitClient.getInstance().create(ApiService.class);
 
 
-        menu.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
+        binding.menu.setOnClickListener(v -> binding.drawerLayout.openDrawer(GravityCompat.START));
 
-        navigationView.setNavigationItemSelectedListener(item -> {
+        binding.navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
 
             if (id == R.id.nav_shedule) {
@@ -74,7 +63,7 @@ public class Performance extends AppCompatActivity {
                 startActivity(new Intent(this, Performance.class));
             }
 
-            drawerLayout.closeDrawer(GravityCompat.START);
+            binding.drawerLayout.closeDrawer(GravityCompat.START);
             return true;
         });
 
@@ -90,7 +79,7 @@ public class Performance extends AppCompatActivity {
     }
     // Update menu
     private void updateCheckedItem() {
-        MenuItem item = navigationView.getMenu().findItem(getCheckedItemId());
+        MenuItem item = binding.navigationView.getMenu().findItem(getCheckedItemId());
         if (item != null) item.setChecked(true);
     }
 

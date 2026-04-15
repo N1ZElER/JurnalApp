@@ -22,7 +22,7 @@ import com.example.jurnals.data.remote.api.MyServerApi;
 import com.example.jurnals.data.remote.client.RetrofitClient;
 import com.example.jurnals.domain.models.Lesson;
 import com.example.jurnals.domain.models.Visit;
-import com.example.jurnals.presentation.auth.Autarization;
+import com.example.jurnals.presentation.auth.AuthorizationActivity;
 
 import org.jetbrains.annotations.Async;
 

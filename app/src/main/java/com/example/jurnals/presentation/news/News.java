@@ -17,6 +17,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.example.jurnals.databinding.ActivityEkzamBinding;
+import com.example.jurnals.databinding.ActivityNewsBinding;
 import com.example.jurnals.presentation.exams.Ekzam;
 import com.example.jurnals.data.remote.api.ApiService;
 import com.example.jurnals.data.remote.client.RetrofitClient;
@@ -35,12 +37,8 @@ import retrofit2.Response;
 
 public class News extends AppCompatActivity {
 
-    SwipeRefreshLayout swipeRefresh;
-    ImageButton settings, menu;
-    TextView dateText;
-    RecyclerView recyclerView;
-    NavigationView navigationView;
-    DrawerLayout drawerLayout;
+    private ActivityNewsBinding binding;
+
     ApiService api;
     NewsAdapter newsAdapter;
     Context context;
@@ -52,13 +50,10 @@ public class News extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news);
 
-        swipeRefresh = findViewById(R.id.swipeRefresh);
-        settings = findViewById(R.id.settings);
-        menu = findViewById(R.id.menu);
-        dateText = findViewById(R.id.dateText);
-        recyclerView = findViewById(R.id.recyclerView);
-        navigationView = findViewById(R.id.navigationView);
-        drawerLayout = findViewById(R.id.drawerLayout);
+        binding = ActivityNewsBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+
         context = this;
 
         newsList = new ArrayList<>();
@@ -70,12 +65,12 @@ public class News extends AppCompatActivity {
         String token = prefs.getString("token", null);
 
         newsAdapter = new NewsAdapter(newsList, api, token);
-        recyclerView.setAdapter(newsAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        binding.recyclerView.setAdapter(newsAdapter);
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        menu.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
+        binding.menu.setOnClickListener(v -> binding.drawerLayout.openDrawer(GravityCompat.START));
 
-        navigationView.setNavigationItemSelectedListener(item -> {
+        binding.navigationView.setNavigationItemSelectedListener(item -> {
 
             int id = item.getItemId();
 
@@ -84,7 +79,7 @@ public class News extends AppCompatActivity {
             } else if (id == R.id.nav_ekzam) {
                 startActivity(new Intent(this, Ekzam.class));
             } else if (id == R.id.nav_news) {
-                drawerLayout.closeDrawer(GravityCompat.START);
+                binding.drawerLayout.closeDrawer(GravityCompat.START);
             } else if (id == R.id.nav_auth) {
                 Toast.makeText(this, "Вы уже авторизованы", Toast.LENGTH_SHORT).show();
             } else if (id == R.id.nav_performance) {
@@ -93,19 +88,19 @@ public class News extends AppCompatActivity {
                 startActivity(new Intent(this, Ozevs.class));
             }
 
-            drawerLayout.closeDrawer(GravityCompat.START);
+            binding.drawerLayout.closeDrawer(GravityCompat.START);
             return true;
         });
 
-        dateText.setText("Объявления");
+        binding.dateText.setText("Объявления");
 
         loadNews();
-        swipeRefresh.setOnRefreshListener(this::loadNews);
+        binding.swipeRefresh.setOnRefreshListener(this::loadNews);
     }
 
     private void loadNews() {
-        swipeRefresh.setEnabled(false);
-        swipeRefresh.setRefreshing(true);
+        binding.swipeRefresh.setEnabled(false);
+        binding.swipeRefresh.setRefreshing(true);
 
         SharedPreferences prefs = getSharedPreferences("auth", MODE_PRIVATE);
         String token = prefs.getString("token", null);
@@ -113,34 +108,34 @@ public class News extends AppCompatActivity {
         api.getNews("Bearer " + token).enqueue(new Callback<List<New>>() {
             @Override
             public void onResponse(Call<List<New>> call, Response<List<New>> response) {
-                swipeRefresh.setRefreshing(false);
+                binding.swipeRefresh.setRefreshing(false);
 
                 if (response.isSuccessful() && response.body() != null) {
                     List<New> newNews = response.body();
 
                     if (newNews.isEmpty()) {
-                        dateText.setText("Объявлений нет");
+                        binding.dateText.setText("Объявлений нет");
                         newsList.clear();
                         newsAdapter.notifyDataSetChanged();
                         return;
                     }
 
-                    dateText.setText("Последние объявления");
+                    binding.dateText.setText("Последние объявления");
 
                     newsList.clear();
                     newsList.addAll(newNews);
                     newsAdapter.notifyDataSetChanged();
 
                 } else {
-                    dateText.setText("❌ Ошибка ответа сервера: " + response.code());
+                    binding.dateText.setText("❌ Ошибка ответа сервера: " + response.code());
                 }
             }
 
             @Override
             public void onFailure(Call<List<New>> call, Throwable t) {
-                swipeRefresh.setEnabled(false);
-                swipeRefresh.setRefreshing(false);
-                dateText.setText("❌ Ошибка подключения");
+                binding.swipeRefresh.setEnabled(false);
+                binding.swipeRefresh.setRefreshing(false);
+                binding.dateText.setText("❌ Ошибка подключения");
             }
         });
     }
@@ -154,7 +149,7 @@ public class News extends AppCompatActivity {
 
     // Update menu
     private void updateCheckedItem() {
-        MenuItem item = navigationView.getMenu().findItem(getCheckedItemId());
+        MenuItem item = binding.navigationView.getMenu().findItem(getCheckedItemId());
         if (item != null) item.setChecked(true);
     }
 

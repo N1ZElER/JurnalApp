@@ -26,9 +26,10 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.jurnals.data.remote.api.ApiService;
 import com.example.jurnals.data.remote.client.RetrofitClient;
+import com.example.jurnals.databinding.ActivityMainBinding;
 import com.example.jurnals.presentation.ozevs.Ozevs;
 import com.example.jurnals.presentation.schedule.ScheduleAdapter;
-import com.example.jurnals.presentation.auth.Autarization;
+import com.example.jurnals.presentation.auth.AuthorizationActivity;
 import com.example.jurnals.presentation.exams.Ekzam;
 import com.example.jurnals.presentation.news.News;
 import com.example.jurnals.domain.models.Lesson;
@@ -50,19 +51,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
-    ImageButton menu, calendarBtn, settings;
-    TextView dateText;
-    RecyclerView recyclerView;
-    NavigationView navigationView;
-    DrawerLayout drawerLayout;
-    SwipeRefreshLayout swipeRefresh;
+    private ActivityMainBinding binding;
     ApiService api;
     ScheduleAdapter adapter;
     private ScheduleRepository repository;
     String selectedDate;
-    View dragHandle;
     private BottomSheetBehavior<MaterialCardView> bottomSheetBehavior;
-    private MaterialCardView contentCard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,52 +66,43 @@ public class MainActivity extends AppCompatActivity {
         String token = prefs.getString("token", null);
 
         if (token == null) {
-            startActivity(new Intent(this, Autarization.class));
+            startActivity(new Intent(this, AuthorizationActivity.class));
             finish();
             return;
         }
 
-        setContentView(R.layout.activity_main);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
         requestNotificationPermission();
 
 
-
-        menu = findViewById(R.id.menu);
-        settings = findViewById(R.id.settings);
-        dateText = findViewById(R.id.dateText);
-        recyclerView = findViewById(R.id.recyclerView);
-        navigationView = findViewById(R.id.navigationView);
-        drawerLayout = findViewById(R.id.drawerLayout);
-        swipeRefresh = findViewById(R.id.swipeRefresh);
-        calendarBtn = findViewById(R.id.calendarBtn);
-        dragHandle = findViewById(R.id.dragHandle);
-        contentCard = findViewById(R.id.contentCard);
 
         setupBottomSheet();
         setupHandleClick();
 
 
-        dateText.setText("Сегодня");
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        binding.dateText.setText("Сегодня");
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         api = RetrofitClient.getInstance().create(ApiService.class);
 
         adapter = new ScheduleAdapter();
-        recyclerView.setAdapter(adapter);
+        binding.recyclerView.setAdapter(adapter);
 
         repository = new ScheduleRepository(this,api);
 
         selectedDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
         loadSchedule(selectedDate);
 
-        menu.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
+        binding.menu.setOnClickListener(v -> binding.drawerLayout.openDrawer(GravityCompat.START));
 
-        navigationView.setNavigationItemSelectedListener(item -> {
+        binding.navigationView.setNavigationItemSelectedListener(item -> {
 
             int id = item.getItemId();
 
             if (id == R.id.nav_shedule) {
-                drawerLayout.closeDrawer(GravityCompat.START);
+                binding.drawerLayout.closeDrawer(GravityCompat.START);
             } else if (id == R.id.nav_ekzam) {
                 startActivity(new Intent(this, Ekzam.class));
             } else if (id == R.id.nav_news) {
@@ -130,14 +115,14 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(this, Ozevs.class));
             }
 
-            drawerLayout.closeDrawer(GravityCompat.START);
+            binding.drawerLayout.closeDrawer(GravityCompat.START);
             return true;
         });
 
 
-        swipeRefresh.setOnRefreshListener(() -> loadSchedule(selectedDate));
+        binding.swipeRefresh.setOnRefreshListener(() -> loadSchedule(selectedDate));
 
-        calendarBtn.setOnClickListener(v -> {
+        binding.calendarBtn.setOnClickListener(v -> {
 
             MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder
                     .datePicker()
@@ -164,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
                     displayDate = viewFormat.format(selected.getTime());
                 }
 
-                dateText.setText(displayDate);
+                binding.dateText.setText(displayDate);
 
                 SimpleDateFormat apiFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
                 selectedDate = apiFormat.format(selected.getTime());
@@ -183,32 +168,32 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void loadSchedule(String date) {
-        swipeRefresh.setEnabled(false);
-        swipeRefresh.setRefreshing(true);
+        binding.swipeRefresh.setEnabled(false);
+        binding.swipeRefresh.setRefreshing(true);
 
 
         repository.loadSchedule(date, new ScheduleRepository.ScheduleCallback() {
             @Override
             public void onSuccess(List<Lesson> lessons) {
-                swipeRefresh.setRefreshing(false);
+                binding.swipeRefresh.setRefreshing(false);
                 adapter.setData(lessons);
 
                 if (lessons == null || lessons.isEmpty()) {
-                    dateText.setText("Пар нет");
+                    binding.dateText.setText("Пар нет");
                 }
             }
 
             @Override
             public void onUnauthorized() {
-                swipeRefresh.setRefreshing(false);
+                binding.swipeRefresh.setRefreshing(false);
                 redirectToAuth();
             }
 
             @Override
             public void onError(String message) {
-                swipeRefresh.setRefreshing(false);
+                binding.swipeRefresh.setRefreshing(false);
                 Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
-                dateText.setText("❌ Ошибка подключения");
+                binding.dateText.setText("❌ Ошибка подключения");
             }
         });
     }
@@ -234,14 +219,14 @@ public class MainActivity extends AppCompatActivity {
         editor.remove("tokenExpiry");
         editor.apply();
 
-        Intent intent = new Intent(MainActivity.this, Autarization.class);
+        Intent intent = new Intent(MainActivity.this, AuthorizationActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
 
 
     private void setupBottomSheet() {
-        bottomSheetBehavior = BottomSheetBehavior.from(contentCard);
+        bottomSheetBehavior = BottomSheetBehavior.from(binding.contentCard);
 
         bottomSheetBehavior.setHideable(false);
         bottomSheetBehavior.setDraggable(true);
@@ -252,8 +237,8 @@ public class MainActivity extends AppCompatActivity {
 
         bottomSheetBehavior.setSkipCollapsed(false);
 
-        contentCard.post(() -> {
-            View parent = (View) contentCard.getParent();
+        binding.contentCard.post(() -> {
+            View parent = (View) binding.contentCard.getParent();
             int parentHeight = parent.getHeight();
 
             int peekHeight = (int) (parentHeight * 0.73f);
@@ -281,7 +266,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupHandleClick() {
-        dragHandle.setOnClickListener(v -> {
+        binding.dragHandle.setOnClickListener(v -> {
             int state = bottomSheetBehavior.getState();
 
             if (state == BottomSheetBehavior.STATE_COLLAPSED) {
@@ -306,7 +291,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Update menu
     private void updateCheckedItem() {
-        MenuItem item = navigationView.getMenu().findItem(getCheckedItemId());
+        MenuItem item = binding.navigationView.getMenu().findItem(getCheckedItemId());
         if (item != null) item.setChecked(true);
     }
 
