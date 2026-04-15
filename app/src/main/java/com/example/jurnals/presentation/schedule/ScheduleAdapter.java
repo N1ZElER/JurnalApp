@@ -22,7 +22,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.jurnals.MainActivity;
 import com.example.jurnals.domain.models.Lesson;
 import com.example.jurnals.R;
-import com.example.jurnals.presentation.auth.Autarization;
+import com.example.jurnals.presentation.auth.AuthorizationActivity;
 import com.google.android.material.card.MaterialCardView;
 
 import java.time.LocalTime;
