@@ -1,37 +1,22 @@
 package com.example.jurnals.presentation.schedule;
 
-import static android.content.Context.MODE_PRIVATE;
-
-import static androidx.core.content.ContextCompat.startActivity;
-
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.example.jurnals.MainActivity;
+import com.example.jurnals.data.remote.api.ApiService;
 import com.example.jurnals.domain.models.Lesson;
 import com.example.jurnals.R;
-import com.example.jurnals.presentation.auth.AuthorizationActivity;
 import com.google.android.material.card.MaterialCardView;
 
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHolder> {
 
@@ -40,6 +25,9 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
     public ScheduleAdapter() {
         lessons = new ArrayList<>();
     }
+
+
+
 
     @NonNull
     @Override

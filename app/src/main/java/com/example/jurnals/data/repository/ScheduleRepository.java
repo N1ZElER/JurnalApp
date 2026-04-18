@@ -1,30 +1,8 @@
-package com.example.jurnals.presentation.schedule;
+package com.example.jurnals.data.repository;
 
-import static android.content.Context.MODE_PRIVATE;
-
-import static androidx.core.content.ContextCompat.startActivity;
-
-import android.Manifest;
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.os.Build;
-import android.widget.Toast;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
-import com.example.jurnals.MainActivity;
 import com.example.jurnals.data.remote.api.ApiService;
-import com.example.jurnals.data.remote.api.MyServerApi;
-import com.example.jurnals.data.remote.client.RetrofitClient;
 import com.example.jurnals.domain.models.Lesson;
 import com.example.jurnals.domain.models.Visit;
-import com.example.jurnals.presentation.auth.AuthorizationActivity;
-
-import org.jetbrains.annotations.Async;
 
 import java.util.HashMap;
 import java.util.List;
@@ -36,14 +14,9 @@ import retrofit2.Response;
 
 public class ScheduleRepository {
 
-    private final Context context;
     private final ApiService api;
-    private List<Lesson> lessons;
-    private String selectedDate;
 
-
-    public ScheduleRepository(Context context, ApiService api) {
-        this.context = context;
+    public ScheduleRepository(ApiService api) {
         this.api = api;
     }
 
@@ -53,14 +26,8 @@ public class ScheduleRepository {
         void onError(String message);
     }
 
-
-    public void loadSchedule(String date, ScheduleCallback callback) {
-        this.selectedDate = date;
-
-        SharedPreferences prefs = context.getSharedPreferences("auth", MODE_PRIVATE);
-        String token = prefs.getString("token", null);
-
-        if (token == null) {
+    public void loadSchedule(String token, String date, ScheduleCallback callback) {
+        if (token == null || token.isEmpty()) {
             callback.onUnauthorized();
             return;
         }
@@ -74,18 +41,17 @@ public class ScheduleRepository {
                 }
 
                 if (response.isSuccessful() && response.body() != null) {
-                    lessons = response.body();
+                    List<Lesson> lessons = response.body();
 
                     if (lessons.isEmpty()) {
                         callback.onSuccess(lessons);
                         return;
                     }
-                    loadVisits(callback);
 
+                    loadVisits(token, date, lessons, callback);
                 } else {
                     callback.onError("Ошибка загрузки расписания");
                 }
-
             }
 
             @Override
@@ -95,16 +61,7 @@ public class ScheduleRepository {
         });
     }
 
-
-    private void loadVisits(ScheduleCallback callback) {
-        SharedPreferences authPrefs = context.getSharedPreferences("auth", MODE_PRIVATE);
-        String token = authPrefs.getString("token", null);
-
-        if (token == null) {
-            callback.onUnauthorized();
-            return;
-        }
-
+    private void loadVisits(String token, String selectedDate, List<Lesson> lessons, ScheduleCallback callback) {
         api.getVisits("Bearer " + token).enqueue(new Callback<List<Visit>>() {
             @Override
             public void onResponse(Call<List<Visit>> call, Response<List<Visit>> response) {
@@ -115,11 +72,6 @@ public class ScheduleRepository {
 
                 if (response.isSuccessful() && response.body() != null) {
                     List<Visit> visits = response.body();
-
-                    if (lessons == null) {
-                        callback.onError("Занятия не загружены");
-                        return;
-                    }
 
                     Map<String, Visit> visitMap = new HashMap<>();
 
