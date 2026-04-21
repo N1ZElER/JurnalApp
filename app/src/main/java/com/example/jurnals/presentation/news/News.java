@@ -46,7 +46,7 @@ public class News extends AppCompatActivity {
 
     private ActivityNewsBinding binding;
     NewsAdapter newsAdapter;
-    private List<New> newsList = new ArrayList<>();
+    private List<New> news = new ArrayList<>();
     private NewViewModel viewModel;
     private String token;
 
@@ -61,6 +61,8 @@ public class News extends AppCompatActivity {
 
         binding = ActivityNewsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        binding.swipeRefresh.setEnabled(false);
 
         SharedPreferences preferences = getSharedPreferences("auth", MODE_PRIVATE);
         token = preferences.getString("token", null);
@@ -85,7 +87,7 @@ public class News extends AppCompatActivity {
     private void setupRecycler() {
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        newsAdapter = new NewsAdapter(newsList, new NewsAdapter.OnNewsClickListener() {
+        newsAdapter = new NewsAdapter(news, new NewsAdapter.OnNewsClickListener() {
             @Override
             public void onNewsClick(New news, int position) {
                 if (news.isExpanded()) {
@@ -116,14 +118,15 @@ public class News extends AppCompatActivity {
     private void setupObservers(){
         viewModel.getNews().observe(this, news -> {
             if (news != null) {
-                newsList.clear();
-                newsList.addAll(news);
+                news.clear();
+                news.addAll(news);
                 newsAdapter.notifyDataSetChanged();
             }
         });
 
         viewModel.getLoading().observe(this, isLoading -> {
-            binding.swipeRefresh.setRefreshing(isLoading);
+
+            binding.swipeRefresh.setEnabled(false);
         });
 
         viewModel.getError().observe(this, message -> {

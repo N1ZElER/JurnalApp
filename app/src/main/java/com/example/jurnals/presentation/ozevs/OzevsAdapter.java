@@ -8,23 +8,19 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.jurnals.data.remote.api.ApiService;
 import com.example.jurnals.domain.models.Ozev;
 import com.example.jurnals.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class OzevsAdapter extends RecyclerView.Adapter<OzevsAdapter.ViewHolder> {
 
-    private final ApiService apiService;
-    private List<Ozev> ozevsList = new ArrayList<>();
+    private final List<Ozev> ozevsList;
 
-
-    public OzevsAdapter(ApiService apiService, List<Ozev> ozevsList) {
-        this.apiService = apiService;
+    public OzevsAdapter(List<Ozev> ozevsList) {
         this.ozevsList = ozevsList;
     }
+
 
     @NonNull
     @Override

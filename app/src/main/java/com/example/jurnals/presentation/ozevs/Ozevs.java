@@ -13,12 +13,15 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.jurnals.data.remote.api.ApiService;
 import com.example.jurnals.data.remote.client.RetrofitClient;
+import com.example.jurnals.data.repository.EkzamRepository;
+import com.example.jurnals.data.repository.OzevRepository;
 import com.example.jurnals.databinding.ActivityAutarizationBinding;
 import com.example.jurnals.databinding.ActivityNewsBinding;
 import com.example.jurnals.databinding.ActivityOzevsBinding;
@@ -26,6 +29,9 @@ import com.example.jurnals.domain.models.Ozev;
 import com.example.jurnals.presentation.exams.Ekzam;
 import com.example.jurnals.MainActivity;
 import com.example.jurnals.R;
+import com.example.jurnals.presentation.exams.EkzamViewModel;
+import com.example.jurnals.presentation.exams.EkzamViewModelFactory;
+import com.example.jurnals.presentation.exams.ExamAdapter;
 import com.example.jurnals.presentation.news.News;
 import com.google.android.material.navigation.NavigationView;
 
@@ -39,10 +45,12 @@ import retrofit2.Response;
 public class Ozevs extends AppCompatActivity {
 
     private ActivityOzevsBinding binding;
-    ApiService api;
     OzevsAdapter ozevsAdapter;
-    Context context;
-    private List<Ozev> ozevsList = new ArrayList<>();
+    private List<Ozev> ozevs = new ArrayList<>();
+    private OzevViewModel viewModel;
+    private String token;
+
+
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -51,17 +59,69 @@ public class Ozevs extends AppCompatActivity {
 
         binding = ActivityOzevsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        context = this;
 
-        api = RetrofitClient.getInstance().create(ApiService.class);
+        binding.swipeRefresh.setEnabled(false);
 
-        ozevsAdapter = new OzevsAdapter(api, ozevsList);
+        SharedPreferences preferences = getSharedPreferences("auth", MODE_PRIVATE);
+        token = preferences.getString("token", null);
+
+        setupRecycler();
+        setupViewModel();
+        setupObservers();
+        setupListeners();
+
+        loadOzev();
+
+        if(token != null) {
+            viewModel.loadOzevs(token);
+        } else {
+            Toast.makeText(this, "Пожалуйста, авторизуйтесь", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    private void setupRecycler() {
+        binding.recyclerView.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(this));
+        ozevsAdapter = new OzevsAdapter(ozevs);
         binding.recyclerView.setAdapter(ozevsAdapter);
-        binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
 
-        loadOzevs();
+    private void setupViewModel() {
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
+        OzevRepository repository = new OzevRepository(api);
+        OzevViewModelFactory factory = new OzevViewModelFactory(repository);
 
-        binding.menu.setOnClickListener(v -> binding.drawerLayout.openDrawer(GravityCompat.START));
+        viewModel = new ViewModelProvider(this, factory).get(OzevViewModel.class);
+    }
+
+    private void setupObservers() {
+        viewModel.getOzevs().observe(this, ozevList -> {
+            if (ozevList != null) {
+                ozevs.clear();
+                ozevs.addAll(ozevList);
+                ozevsAdapter.notifyDataSetChanged();
+            }
+        });
+
+        viewModel.getError().observe(this, message -> {
+            if (message != null && !message.isEmpty()) {
+                binding.dateText.setText("❌ " + message);
+            }
+        });
+
+        viewModel.getUnauthorized().observe(this, unauthorized -> {
+            if (Boolean.TRUE.equals(unauthorized)) {
+                Toast.makeText(this, "Сессия истекла", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void setupListeners(){
+        binding.menu.setOnClickListener(v -> {
+            if (binding.drawerLayout != null) {
+                binding.drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
 
         binding.navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
@@ -83,51 +143,16 @@ public class Ozevs extends AppCompatActivity {
             binding.drawerLayout.closeDrawer(GravityCompat.START);
             return true;
         });
+        binding.swipeRefresh.setOnRefreshListener(this::loadOzev);
     }
 
-    private void loadOzevs() {
-        binding.swipeRefresh.setEnabled(false);
-        binding.swipeRefresh.setRefreshing(true);
-
+    private void loadOzev() {
         SharedPreferences prefs = getSharedPreferences("auth", MODE_PRIVATE);
         String token = prefs.getString("token", null);
-
-        if (token == null) {
-            binding.swipeRefresh.setRefreshing(false);
-            binding.dateText.setText("Токен не найден");
-            return;
-        }
-
-        api.getOzevs("Bearer " + token).enqueue(new Callback<List<Ozev>>() {
-            @Override
-            public void onResponse(Call<List<Ozev>> call,
-                                   Response<List<Ozev>> response) {
-                binding.swipeRefresh.setRefreshing(false);
-
-                if (response.isSuccessful() && response.body() != null) {
-                    List<Ozev> newOzevs = response.body();
-
-                    if (newOzevs.isEmpty()) {
-                        binding.dateText.setText("Пока что нету отзывов");
-                        ozevsList.clear();
-                        ozevsAdapter.notifyDataSetChanged();
-                        return;
-                    }
-
-                    ozevsList.clear();
-                    ozevsList.addAll(newOzevs);
-                    ozevsAdapter.notifyDataSetChanged();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Ozev>> call, Throwable t) {
-                binding.swipeRefresh.setEnabled(false);
-                binding.swipeRefresh.setRefreshing(false);
-                binding.dateText.setText("❌ Ошибка подключения");
-            }
-        });
+        viewModel.loadOzevs(token);
     }
+
+
 
     @Override
     protected void onResume() {

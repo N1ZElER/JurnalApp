@@ -39,6 +39,8 @@ public class Ekzam extends AppCompatActivity {
         binding = ActivityEkzamBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        binding.swipeRefresh.setEnabled(false);
+
         setupRecycler();
         setupViewModel();
         setupObservers();
@@ -77,9 +79,8 @@ public class Ekzam extends AppCompatActivity {
         });
 
         viewModel.getLoading().observe(this, isLoading -> {
-            boolean loading = Boolean.TRUE.equals(isLoading);
-            binding.swipeRefresh.setRefreshing(loading);
-            binding.swipeRefresh.setEnabled(!loading);
+
+            binding.swipeRefresh.setEnabled(false);
         });
 
         viewModel.getError().observe(this, message -> {

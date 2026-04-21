@@ -61,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        binding.swipeRefresh.setEnabled(false);
+
         requestNotificationPermission();
         setupBottomSheet();
         setupHandleClick();
@@ -103,8 +105,8 @@ public class MainActivity extends AppCompatActivity {
         viewModel.getLoading().observe(this, isLoading -> {
             boolean loading = Boolean.TRUE.equals(isLoading);
 
-            binding.swipeRefresh.setRefreshing(!loading);
-            binding.swipeRefresh.setEnabled(loading);
+            binding.swipeRefresh.setEnabled(false);
+            binding.swipeRefresh.setRefreshing(loading);
         });
 
         viewModel.getError().observe(this, message -> {
