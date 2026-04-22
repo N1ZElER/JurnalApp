@@ -112,7 +112,7 @@ public class MyFirebaseService extends FirebaseMessagingService {
             Log.d(TAG, "sendTokenRequest username=" + username);
             Log.d(TAG, "sendTokenRequest token=" + token);
 
-            URL url = new URL("http://194.113.209.238:3001/api/device-token");
+            URL url = new URL("http://89.127.203.209:3001/api/device-token");
             conn = (HttpURLConnection) url.openConnection();
 
             conn.setRequestMethod("POST");
