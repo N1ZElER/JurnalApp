@@ -1,5 +1,7 @@
 package com.example.jurnals.data.remote.api;
 
+import com.example.jurnals.data.remote.backendModels.BackendLoginRequest;
+import com.example.jurnals.data.remote.backendModels.BackendLoginResponse;
 import com.example.jurnals.domain.models.Exam;
 import com.example.jurnals.domain.models.Lesson;
 import com.example.jurnals.domain.models.New;
@@ -7,14 +9,27 @@ import com.example.jurnals.domain.models.Ozev;
 import com.example.jurnals.domain.models.Visit;
 
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
+import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 public interface ApiService {
+
+    @Headers({
+            "Accept-Language: ru_RU, ru",
+            "Authorization: Bearer null",
+            "Origin: https://journal.top-academy.ru",
+            "Referer: https://journal.top-academy.ru/",
+            "User-Agent: Mozilla/5.0"
+    })
+    @POST("api/v2/auth/login")
+    Call<BackendLoginResponse> login(@Body Map<String, Object> body);
 
     @Headers({
             "accept-language: ru_RU, ru",

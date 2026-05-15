@@ -4,15 +4,8 @@ import com.google.gson.annotations.SerializedName;
 
 public class BackendLoginResponse {
 
-    @SerializedName("ok")
-    private boolean ok;
-
-    @SerializedName("accessToken")
+    @SerializedName("access_token")
     private String accessToken;
-
-    public boolean isOk() {
-        return ok;
-    }
 
     public String getAccessToken() {
         return accessToken;

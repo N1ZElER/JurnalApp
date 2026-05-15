@@ -3,22 +3,22 @@ package com.example.jurnals.presentation.auth;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.jurnals.MainActivity;
 import com.example.jurnals.core.notification.MyFirebaseService;
-import com.example.jurnals.data.remote.api.MyServerApi;
-import com.example.jurnals.data.remote.backendModels.BackendLoginRequest;
+import com.example.jurnals.data.remote.api.ApiService;
 import com.example.jurnals.data.remote.backendModels.BackendLoginResponse;
-import com.example.jurnals.data.remote.client.MyServerClient;
+import com.example.jurnals.data.remote.client.RetrofitClient;
 import com.example.jurnals.databinding.ActivityAutarizationBinding;
-import com.example.jurnals.databinding.ActivityMainBinding;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.messaging.FirebaseMessaging;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -26,7 +26,6 @@ import retrofit2.Response;
 
 public class AuthorizationActivity extends AppCompatActivity {
 
-    private static final String TAG = "AuthorizationActivity";
     private static final long DOUBLE_CLICK_DELAY = 300;
 
     private ActivityAutarizationBinding binding;
@@ -35,7 +34,7 @@ public class AuthorizationActivity extends AppCompatActivity {
     private TextInputEditText passwordInput;
     private MaterialButton loginButton;
 
-    private MyServerApi api;
+    private ApiService api;
     private SharedPreferences prefs;
 
     private long lastClickTime = 0;
@@ -52,7 +51,7 @@ public class AuthorizationActivity extends AppCompatActivity {
         loginButton = binding.loginBtn;
 
         prefs = getSharedPreferences("auth", MODE_PRIVATE);
-        api = MyServerClient.getInstance().create(MyServerApi.class);
+        api = RetrofitClient.getInstance().create(ApiService.class);
 
         checkTokenAndLogin();
 
@@ -109,12 +108,22 @@ public class AuthorizationActivity extends AppCompatActivity {
     }
 
     private void doLogin(String username, String password, boolean saveLocalCredentials) {
-        BackendLoginRequest request = new BackendLoginRequest(username, password);
 
-        api.login(request).enqueue(new Callback<BackendLoginResponse>() {
+        Map<String, Object> body = new HashMap<>();
+        body.put("application_key", "6a56a5df2667e65aab73ce76d1dd737f7d1faef9c52e8b8c55ac75f565d8e8a6");
+        body.put("id_city", null);
+        body.put("username", username);
+        body.put("password", password);
+
+        api.login(body).enqueue(new Callback<BackendLoginResponse>() {
             @Override
-            public void onResponse(Call<BackendLoginResponse> call, Response<BackendLoginResponse> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().isOk()) {
+            public void onResponse(Call<BackendLoginResponse> call,
+                                   Response<BackendLoginResponse> response) {
+
+                if (response.isSuccessful()
+                        && response.body() != null
+                        && response.body().getAccessToken() != null) {
+
                     String token = response.body().getAccessToken();
                     long expiryTime = System.currentTimeMillis() + (24 * 60 * 60 * 1000);
 
@@ -132,19 +141,18 @@ public class AuthorizationActivity extends AppCompatActivity {
                     SharedPreferences appPrefs = getSharedPreferences("app", MODE_PRIVATE);
                     appPrefs.edit().putString("username", username).apply();
 
-                    Log.d(TAG, "Login successful. Username saved: " + username);
-
-                    FirebaseMessaging.getInstance().getToken()
+                    FirebaseMessaging.getInstance()
+                            .getToken()
                             .addOnCompleteListener(task -> {
-                                if (!task.isSuccessful()) {
-                                    Log.e(TAG, "FCM getToken failed", task.getException());
-                                } else {
-                                    String fcmToken = task.getResult();
-                                    Log.d(TAG, "CURRENT TOKEN AFTER LOGIN = " + fcmToken);
-                                    Log.d(TAG, "CURRENT TOKEN LEN = " + (fcmToken == null ? 0 : fcmToken.length()));
+                                if (task.isSuccessful()) {
+                                    MyFirebaseService.sendCurrentTokenNow(
+                                            AuthorizationActivity.this,
+                                            username
+                                    );
 
-                                    MyFirebaseService.sendCurrentTokenNow(AuthorizationActivity.this, username);
-                                    MyFirebaseService.sendSavedTokenIfPossible(AuthorizationActivity.this);
+                                    MyFirebaseService.sendSavedTokenIfPossible(
+                                            AuthorizationActivity.this
+                                    );
                                 }
 
                                 openMainActivity();
