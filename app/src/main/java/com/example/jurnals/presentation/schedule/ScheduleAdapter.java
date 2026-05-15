@@ -95,6 +95,9 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             }else{
                 color = holder.itemView.getResources().getColor(R.color.lesson_absent);
             }
+            if(status == 2){
+                color = holder.itemView.getResources().getColor(R.color.lesson_late);
+            }
         }else{
             color = holder.itemView.getResources().getColor(R.color.lesson_default);
         }

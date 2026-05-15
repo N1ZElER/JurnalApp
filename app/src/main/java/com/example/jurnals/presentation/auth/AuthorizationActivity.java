@@ -8,9 +8,11 @@ import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.jurnals.MainActivity;
-import com.example.jurnals.core.notification.MyFirebaseService;
 import com.example.jurnals.data.remote.api.ApiService;
+import com.example.jurnals.data.remote.api.MyServerApi;
 import com.example.jurnals.data.remote.backendModels.BackendLoginResponse;
+import com.example.jurnals.data.remote.backendModels.DeviceTokenRequest;
+import com.example.jurnals.data.remote.client.MyServerClient;
 import com.example.jurnals.data.remote.client.RetrofitClient;
 import com.example.jurnals.databinding.ActivityAutarizationBinding;
 import com.google.android.material.button.MaterialButton;
@@ -33,8 +35,8 @@ public class AuthorizationActivity extends AppCompatActivity {
     private TextInputEditText usernameInput;
     private TextInputEditText passwordInput;
     private MaterialButton loginButton;
-
     private ApiService api;
+    private MyServerApi backendApi;
     private SharedPreferences prefs;
 
     private long lastClickTime = 0;
@@ -52,6 +54,7 @@ public class AuthorizationActivity extends AppCompatActivity {
 
         prefs = getSharedPreferences("auth", MODE_PRIVATE);
         api = RetrofitClient.getInstance().create(ApiService.class);
+        backendApi = MyServerClient.getInstance().create(MyServerApi.class);
 
         checkTokenAndLogin();
 
@@ -71,10 +74,10 @@ public class AuthorizationActivity extends AppCompatActivity {
 
     private void checkTokenAndLogin() {
         String token = prefs.getString("token", null);
-        long tokenExpiry = prefs.getLong("tokenExpiry", 0);
+        long expiry = prefs.getLong("tokenExpiry", 0);
         long now = System.currentTimeMillis();
 
-        if (token != null && now < tokenExpiry) {
+        if (token != null && now < expiry) {
             openMainActivity();
             return;
         }
@@ -107,7 +110,7 @@ public class AuthorizationActivity extends AppCompatActivity {
         doLogin(username, password, true);
     }
 
-    private void doLogin(String username, String password, boolean saveLocalCredentials) {
+    private void doLogin(String username, String password, boolean saveLocal) {
 
         Map<String, Object> body = new HashMap<>();
         body.put("application_key", "6a56a5df2667e65aab73ce76d1dd737f7d1faef9c52e8b8c55ac75f565d8e8a6");
@@ -125,38 +128,23 @@ public class AuthorizationActivity extends AppCompatActivity {
                         && response.body().getAccessToken() != null) {
 
                     String token = response.body().getAccessToken();
-                    long expiryTime = System.currentTimeMillis() + (24 * 60 * 60 * 1000);
+
+                    long expiry = System.currentTimeMillis() + (24 * 60 * 60 * 1000);
 
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.putString("token", token);
-                    editor.putLong("tokenExpiry", expiryTime);
+                    editor.putLong("tokenExpiry", expiry);
                     editor.putString("username", username);
 
-                    if (saveLocalCredentials) {
+                    if (saveLocal) {
                         editor.putString("password", password);
                     }
 
                     editor.apply();
 
-                    SharedPreferences appPrefs = getSharedPreferences("app", MODE_PRIVATE);
-                    appPrefs.edit().putString("username", username).apply();
+                    sendFcmToBackend(username);
 
-                    FirebaseMessaging.getInstance()
-                            .getToken()
-                            .addOnCompleteListener(task -> {
-                                if (task.isSuccessful()) {
-                                    MyFirebaseService.sendCurrentTokenNow(
-                                            AuthorizationActivity.this,
-                                            username
-                                    );
-
-                                    MyFirebaseService.sendSavedTokenIfPossible(
-                                            AuthorizationActivity.this
-                                    );
-                                }
-
-                                openMainActivity();
-                            });
+                    openMainActivity();
 
                 } else {
                     showStatus("Ошибка входа: " + response.code());
@@ -168,6 +156,25 @@ public class AuthorizationActivity extends AppCompatActivity {
                 showStatus("Ошибка сети: " + t.getMessage());
             }
         });
+    }
+
+    private void sendFcmToBackend(String username) {
+
+        FirebaseMessaging.getInstance().getToken()
+                .addOnSuccessListener(token -> {
+
+                    DeviceTokenRequest req = new DeviceTokenRequest();
+                    req.username = username;
+                    req.fcmToken = token;
+
+                    backendApi.sendDeviceToken(req).enqueue(new Callback<Void>() {
+                        @Override
+                        public void onResponse(Call<Void> call, Response<Void> response) {}
+
+                        @Override
+                        public void onFailure(Call<Void> call, Throwable t) {}
+                    });
+                });
     }
 
     private void openMainActivity() {

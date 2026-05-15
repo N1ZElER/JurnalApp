@@ -5,8 +5,8 @@
 
     <color name="lesson_present">#4CAF50</color>
     <color name="lesson_absent">#F44336</color>
-    <color name="lesson_default">#FFC107</color>
+    <color name="lesson_late">#FFC107</color>
     <color name="lesson_now">#2196F3</color>
-
+    <color name="lesson_default">#E5E5EB</color>
 
 </resources>
