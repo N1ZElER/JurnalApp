@@ -2,12 +2,15 @@ package com.example.jurnals;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 
+import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -30,6 +33,7 @@ import com.example.jurnals.presentation.news.News;
 import com.example.jurnals.presentation.ozevs.Ozevs;
 import com.example.jurnals.presentation.schedule.ScheduleAdapter;
 import com.example.jurnals.data.repository.ScheduleRepository;
+import com.example.jurnals.presentation.settings.Settings;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.datepicker.MaterialDatePicker;
@@ -82,6 +86,15 @@ public class MainActivity extends AppCompatActivity {
         adapter = new ScheduleAdapter();
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerView.setAdapter(adapter);
+
+        binding.recyclerView.setItemAnimator(null);
+
+        binding.recyclerView.setLayoutAnimation(
+                AnimationUtils.loadLayoutAnimation(
+                        this,
+                        R.anim.layout_anim
+                )
+        );
     }
 
     private void setupViewModel() {
@@ -97,6 +110,10 @@ public class MainActivity extends AppCompatActivity {
 
         viewModel.getLessons().observe(this, lessons -> {
             adapter.setData(lessons);
+
+            if (animationsEnabled()) {
+                binding.recyclerView.scheduleLayoutAnimation();
+            }
 
             if (lessons == null || lessons.isEmpty()) {
                 binding.dateText.setText("Пар нет");
@@ -196,6 +213,15 @@ public class MainActivity extends AppCompatActivity {
 
             datePicker.show(getSupportFragmentManager(), "DATE_PICKER");
         });
+
+
+        binding.settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, Settings.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private boolean isSameDay(Calendar c1, Calendar c2) {
@@ -273,6 +299,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
+    private boolean animationsEnabled() {
+
+        SharedPreferences prefs =
+                getSharedPreferences("settings", MODE_PRIVATE);
+
+        return prefs.getBoolean("animations", true);
+    }
+
+
+
 
     private int dpToPx(int dp) {
         return Math.round(dp * getResources().getDisplayMetrics().density);

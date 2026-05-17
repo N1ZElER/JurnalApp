@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,6 +35,7 @@ import com.example.jurnals.presentation.exams.EkzamViewModel;
 import com.example.jurnals.presentation.exams.EkzamViewModelFactory;
 import com.example.jurnals.presentation.exams.ExamAdapter;
 import com.example.jurnals.presentation.news.News;
+import com.example.jurnals.presentation.settings.Settings;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
@@ -75,8 +78,17 @@ public class Ozevs extends AppCompatActivity {
         if(token != null) {
             viewModel.loadOzevs(token);
         } else {
-            Toast.makeText(this, "Пожалуйста, авторизуйтесь", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Пожалуйста, перезайдите в приложение", Toast.LENGTH_SHORT).show();
         }
+
+        binding.settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Ozevs.this, Settings.class);
+                startActivity(intent);
+            }
+        });
+
     }
 
 
@@ -84,6 +96,16 @@ public class Ozevs extends AppCompatActivity {
         binding.recyclerView.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(this));
         ozevsAdapter = new OzevsAdapter(ozevs);
         binding.recyclerView.setAdapter(ozevsAdapter);
+
+
+        binding.recyclerView.setItemAnimator(null);
+
+        binding.recyclerView.setLayoutAnimation(
+                AnimationUtils.loadLayoutAnimation(
+                        this,
+                        R.anim.layout_anim
+                )
+        );
     }
 
     private void setupViewModel() {
@@ -96,6 +118,11 @@ public class Ozevs extends AppCompatActivity {
 
     private void setupObservers() {
         viewModel.getOzevs().observe(this, ozevList -> {
+
+            if (animationsEnabled()) {
+                binding.recyclerView.scheduleLayoutAnimation();
+            }
+
             if (ozevList != null) {
                 ozevs.clear();
                 ozevs.addAll(ozevList);
@@ -152,19 +179,29 @@ public class Ozevs extends AppCompatActivity {
         viewModel.loadOzevs(token);
     }
 
+    private boolean animationsEnabled() {
+
+        SharedPreferences prefs =
+                getSharedPreferences("settings", MODE_PRIVATE);
+
+        return prefs.getBoolean("animations", true);
+    }
 
 
+    // Update menu
     @Override
     protected void onResume() {
         super.onResume();
         updateCheckedItem();
     }
 
+    // Update menu
     private void updateCheckedItem() {
         MenuItem item = binding.navigationView.getMenu().findItem(getCheckedItemId());
         if (item != null) item.setChecked(true);
     }
 
+    // Update menu
     private int getCheckedItemId() {
         String currentActivity = this.getClass().getSimpleName();
 

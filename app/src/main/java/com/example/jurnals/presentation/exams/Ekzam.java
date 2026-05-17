@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,6 +23,7 @@ import com.example.jurnals.databinding.ActivityEkzamBinding;
 import com.example.jurnals.domain.models.Exam;
 import com.example.jurnals.presentation.news.News;
 import com.example.jurnals.presentation.ozevs.Ozevs;
+import com.example.jurnals.presentation.settings.Settings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +56,16 @@ public class Ekzam extends AppCompatActivity {
         binding.recyclerView.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(this));
         examAdapter = new ExamAdapter(exams);
         binding.recyclerView.setAdapter(examAdapter);
+
+
+        binding.recyclerView.setItemAnimator(null);
+
+        binding.recyclerView.setLayoutAnimation(
+                AnimationUtils.loadLayoutAnimation(
+                        this,
+                        R.anim.layout_anim
+                )
+        );
     }
 
     private void setupViewModel() {
@@ -65,6 +78,11 @@ public class Ekzam extends AppCompatActivity {
 
     private void setupObservers() {
         viewModel.getExams().observe(this, examList -> {
+
+            if (animationsEnabled()) {
+                binding.recyclerView.scheduleLayoutAnimation();
+            }
+
             if (examList == null || examList.isEmpty()) {
                 binding.dateText.setText("🎉 Экзаменов нет");
                 exams.clear();
@@ -125,12 +143,29 @@ public class Ekzam extends AppCompatActivity {
         });
 
         binding.swipeRefresh.setOnRefreshListener(this::loadExam);
+
+
+        binding.settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Ekzam.this, Settings.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void loadExam() {
         SharedPreferences prefs = getSharedPreferences("auth", MODE_PRIVATE);
         String token = prefs.getString("token", null);
         viewModel.loadExam(token);
+    }
+
+    private boolean animationsEnabled() {
+
+        SharedPreferences prefs =
+                getSharedPreferences("settings", MODE_PRIVATE);
+
+        return prefs.getBoolean("animations", true);
     }
 
     // Update menu

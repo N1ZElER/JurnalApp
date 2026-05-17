@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,6 +35,7 @@ import com.example.jurnals.presentation.exams.EkzamViewModel;
 import com.example.jurnals.presentation.exams.EkzamViewModelFactory;
 import com.example.jurnals.presentation.exams.ExamAdapter;
 import com.example.jurnals.presentation.ozevs.Ozevs;
+import com.example.jurnals.presentation.settings.Settings;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
@@ -105,6 +108,17 @@ public class News extends AppCompatActivity {
         });
 
         binding.recyclerView.setAdapter(newsAdapter);
+
+
+        binding.recyclerView.setItemAnimator(null);
+
+        binding.recyclerView.setLayoutAnimation(
+                AnimationUtils.loadLayoutAnimation(
+                        this,
+                        R.anim.layout_anim
+                )
+        );
+
     }
 
     private void setupViewModel() {
@@ -117,6 +131,11 @@ public class News extends AppCompatActivity {
 
     private void setupObservers(){
         viewModel.getNews().observe(this, news -> {
+
+            if (animationsEnabled()) {
+                binding.recyclerView.scheduleLayoutAnimation();
+            }
+
             if (news != null) {
                 news.clear();
                 news.addAll(news);
@@ -188,6 +207,22 @@ public class News extends AppCompatActivity {
             return true;
         });
 
+        binding.settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(News.this, Settings.class);
+                startActivity(intent);
+            }
+        });
+
+    }
+
+    private boolean animationsEnabled() {
+
+        SharedPreferences prefs =
+                getSharedPreferences("settings", MODE_PRIVATE);
+
+        return prefs.getBoolean("animations", true);
     }
 
 
