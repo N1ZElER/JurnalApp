@@ -1,5 +1,8 @@
 package com.example.jurnals.presentation.news;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
@@ -106,6 +109,7 @@ public class NewViewModel extends ViewModel {
         if (html == null) return "";
         return html.replaceAll("(?i)<img[^>]*>", "");
     }
+
 
     private Bitmap extractBase64Image(String html) {
         if (html == null) return null;

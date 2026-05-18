@@ -8,6 +8,8 @@
     android:background="#0B1118"
     tools:context=".presentation.settings.Settings">
 
+
+
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/headerCard"
         android:layout_width="0dp"
@@ -23,6 +25,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:strokeColor="#20FFFFFF"
         app:strokeWidth="1dp">
+
+
 
         <TextView
             android:layout_width="match_parent"
@@ -51,6 +55,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:strokeColor="#20FFFFFF"
         app:strokeWidth="1dp">
+
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -133,7 +139,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Анимации"
+                        android:text="Анимации (BETTA)"
                         android:textColor="#FFFFFF"
                         android:textSize="16sp"
                         android:textStyle="bold"/>

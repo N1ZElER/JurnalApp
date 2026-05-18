@@ -184,7 +184,7 @@ public class Ozevs extends AppCompatActivity {
         SharedPreferences prefs =
                 getSharedPreferences("settings", MODE_PRIVATE);
 
-        return prefs.getBoolean("animations", true);
+        return prefs.getBoolean("animations", false);
     }
 
 

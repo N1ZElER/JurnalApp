@@ -88,11 +88,26 @@ public class News extends AppCompatActivity {
     }
 
     private void setupRecycler() {
+
+        binding.recyclerView.setItemAnimator(null);
+
+        binding.recyclerView.setLayoutAnimation(
+                AnimationUtils.loadLayoutAnimation(
+                        this,
+                        R.anim.layout_anim
+                )
+        );
+
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         newsAdapter = new NewsAdapter(news, new NewsAdapter.OnNewsClickListener() {
             @Override
             public void onNewsClick(New news, int position) {
+
+                if(animationsEnabled()){
+                    binding.recyclerView.scheduleLayoutAnimation();
+                }
+
                 if (news.isExpanded()) {
                     news.setExpanded(false);
                     newsAdapter.updateItem(position);
@@ -110,14 +125,6 @@ public class News extends AppCompatActivity {
         binding.recyclerView.setAdapter(newsAdapter);
 
 
-        binding.recyclerView.setItemAnimator(null);
-
-        binding.recyclerView.setLayoutAnimation(
-                AnimationUtils.loadLayoutAnimation(
-                        this,
-                        R.anim.layout_anim
-                )
-        );
 
     }
 
@@ -130,17 +137,18 @@ public class News extends AppCompatActivity {
     }
 
     private void setupObservers(){
-        viewModel.getNews().observe(this, news -> {
+        viewModel.getNews().observe(this, list -> {
 
             if (animationsEnabled()) {
                 binding.recyclerView.scheduleLayoutAnimation();
             }
 
-            if (news != null) {
-                news.clear();
-                news.addAll(news);
-                newsAdapter.notifyDataSetChanged();
-            }
+            if (list == null) return;
+
+            news.clear();
+            news.addAll(list);
+
+            newsAdapter.notifyDataSetChanged();
         });
 
         viewModel.getLoading().observe(this, isLoading -> {
@@ -222,7 +230,7 @@ public class News extends AppCompatActivity {
         SharedPreferences prefs =
                 getSharedPreferences("settings", MODE_PRIVATE);
 
-        return prefs.getBoolean("animations", true);
+        return prefs.getBoolean("animations", false);
     }
 
 

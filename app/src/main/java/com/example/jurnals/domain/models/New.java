@@ -6,10 +6,6 @@ import com.google.gson.annotations.SerializedName;
 
 public class New {
 
-    private boolean expanded = false;
-    private String fullText;
-    private Bitmap imageBitmap;
-
     @SerializedName("id_bbs")
     private int id_bbs;
 
@@ -19,8 +15,18 @@ public class New {
     @SerializedName("time")
     private String time;
 
+    @SerializedName("viewed")
+    private boolean viewed;
+
     @SerializedName("text_bbs")
     private String text_bbs;
+
+
+    private boolean expanded = false;
+
+    private transient String fullText;
+    private transient Bitmap imageBitmap;
+
 
     public int getId_bbs() {
         return id_bbs;
@@ -34,6 +40,10 @@ public class New {
         return time;
     }
 
+    public boolean isViewed() {
+        return viewed;
+    }
+
     public String getText_bbs() {
         return text_bbs;
     }
@@ -42,20 +52,23 @@ public class New {
         return expanded;
     }
 
-    public void setExpanded(boolean expanded) {
-        this.expanded = expanded;
-    }
-
     public String getFullText() {
         return fullText;
     }
 
-    public void setFullText(String fullText) {
-        this.fullText = fullText;
-    }
-
     public Bitmap getImageBitmap() {
         return imageBitmap;
+    }
+
+
+
+
+    public void setExpanded(boolean expanded) {
+        this.expanded = expanded;
+    }
+
+    public void setFullText(String fullText) {
+        this.fullText = fullText;
     }
 
     public void setImageBitmap(Bitmap imageBitmap) {
